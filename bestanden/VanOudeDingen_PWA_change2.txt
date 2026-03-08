@@ -1,0 +1,61 @@
+In the PWA project at /bestanden/pwa/index.html there is a masonry 
+layout issue caused by the background loading strategy.
+
+## The problem
+The tile grid uses CSS columns for masonry layout. When the initial 
+24 tiles load, CSS columns fills the left column first. When the 
+next background batch arrives, new tiles are appended to the end 
+causing the right column to only start filling after the left column 
+is completely full. This looks visually broken.
+
+## The solution — Smart column insertion
+Instead of appending new tiles to the end of the grid, each new tile 
+must be inserted into the SHORTEST column at that moment.
+
+### How to implement this
+
+1. Remove the tiles from CSS columns layout
+   - Change the tile grid from CSS columns to a flexbox or absolute 
+     positioned container that allows manual column management
+   - Keep the same number of columns as before (2 on mobile, 3 on 
+     tablet, 4+ on desktop) using the same breakpoints
+
+2. Create a column manager
+   Create a JavaScript helper that:
+   - Tracks the current height of each column
+   - On insertTile(tileElement): finds the column with the lowest 
+     current height, appends the tile there, updates that column's 
+     tracked height
+   - On window resize: recalculates number of columns and 
+     redistributes all existing tiles across the new column count
+   - Exposes a reset() method to clear all columns when a new 
+     category is selected or search is performed
+
+3. Integrate with existing loading logic
+   - Initial 24 tiles: insert one by one via insertTile() as each 
+     thumbnail loads (not after all 24 are ready)
+   - Background batches: insert via insertTile() as each batch 
+     arrives — tiles distribute evenly across all columns 
+     automatically
+   - Category switch or search: call reset() first, then insertTile() 
+     for new results
+
+4. Keep all existing tile styling intact
+   - Tile border-radius, hover effects, animations, badges all remain
+   - Tile width = 100% of their column container
+   - Column gap matches the existing gap (10px mobile, 14px desktop)
+
+5. Handle image load events for accurate height tracking
+   - Column height must be measured AFTER the tile image has loaded
+     not before, otherwise height tracking is inaccurate for 
+     variable height images
+   - Use img onload event to trigger height recalculation for that 
+     column after image renders
+
+## After the fix confirm:
+- Tiles distribute evenly across all columns during initial load
+- Background batches continue distributing evenly without 
+  disrupting already loaded tiles
+- Resizing the browser window redistributes tiles correctly
+- Category switching resets and redistributes correctly
+- No existing functionality is broken

@@ -11,7 +11,7 @@
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500&family=Special+Elite&display=swap" rel="stylesheet">
 <title>Van Oude Dingen</title>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -34,8 +34,8 @@ body { font-family: 'Jost', sans-serif; background: var(--bg); color: var(--brow
 /* HEADER */
 header { position:sticky; top:0; z-index:200; background:var(--brown); height:var(--header-h); display:flex; align-items:center; padding:0 16px; gap:12px; box-shadow:0 2px 12px rgba(44,26,14,.3); }
 .logo-wrap { display:flex; flex-direction:column; text-decoration:none; flex-shrink:0; }
-.logo-name { font-family:'Lora',serif; font-size:18px; font-weight:600; color:#FDFAF5; line-height:1.1; }
-.logo-tag { font-size:9px; font-weight:300; letter-spacing:.2em; text-transform:uppercase; color:var(--gold); margin-top:1px; }
+.logo-name { font-family:'Special Elite', cursive; font-size:18px; color:#FDFAF5; line-height:1.1; }
+.logo-tag { font-family:'Special Elite', cursive; font-size:10px; color:white; margin-top:2px; }
 .header-search { flex:1; position:relative; max-width:300px; margin-left:auto; }
 .header-search input { width:100%; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.15); border-radius:20px; padding:7px 14px 7px 34px; color:white; font-family:'Jost',sans-serif; font-size:13px; outline:none; transition:.2s; }
 .header-search input::placeholder { color:rgba(255,255,255,.4); }
@@ -80,14 +80,13 @@ header { position:sticky; top:0; z-index:200; background:var(--brown); height:va
 .page-bar.show { display:flex; }
 .page-title { font-family:'Lora',serif; font-size:20px; font-weight:600; color:var(--brown); }
 
-/* TILE GRID */
-.tile-grid { columns:2; column-gap:10px; padding:0 10px 90px; }
-@media(min-width:540px){.tile-grid{columns:3}}
-@media(min-width:768px){.tile-grid{columns:4;column-gap:14px;padding:0 14px 90px}}
-@media(min-width:1024px){.tile-grid{columns:5}}
-@media(min-width:1280px){.tile-grid{columns:6}}
+/* TILE GRID (CHANGE 2 - MASONRY) */
+.tile-grid { display: flex; align-items: flex-start; padding:0 10px 90px; gap:10px; }
+@media(min-width:768px){.tile-grid{padding:0 14px 90px; gap:14px; }}
+.grid-col { flex: 1; display: flex; flex-direction: column; min-width: 0; }
 
-.tile { break-inside:avoid; margin-bottom:10px; background:var(--surface); border-radius:8px; overflow:hidden; cursor:pointer; position:relative; transition:transform .2s,box-shadow .2s; animation:tileIn .4s ease backwards; }
+.tile { width: 100%; margin-bottom:10px; background:var(--surface); border-radius:8px; overflow:hidden; cursor:pointer; position:relative; transition:transform .2s,box-shadow .2s; animation:tileIn .4s ease backwards; }
+@media(min-width:768px){ .tile { margin-bottom:14px; } .grid-col { gap:14px; } }
 .tile:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(44,26,14,.14); }
 .tile:active { transform:scale(.98); }
 @keyframes tileIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
@@ -103,7 +102,8 @@ header { position:sticky; top:0; z-index:200; background:var(--brown); height:va
 .tile.inspo .tile-body { display:none; }
 
 /* SKELETON LOADING */
-.skeleton { background:var(--sand-lt); border-radius:8px; overflow:hidden; break-inside:avoid; margin-bottom:10px; }
+.skeleton { width:100%; background:var(--sand-lt); border-radius:8px; overflow:hidden; margin-bottom:10px; }
+@media(min-width:768px){ .skeleton { margin-bottom:14px; } }
 .skeleton-img { background:linear-gradient(90deg,var(--sand-lt) 25%,var(--sand) 50%,var(--sand-lt) 75%); background-size:200% 100%; animation:shimmer 1.4s infinite; }
 @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
 .skeleton-body { padding:10px; }
@@ -111,7 +111,7 @@ header { position:sticky; top:0; z-index:200; background:var(--brown); height:va
 .skeleton-line.short { width:60%; }
 
 /* EMPTY + ERROR */
-.state-msg { text-align:center; padding:60px 20px; color:var(--text-soft); }
+.state-msg { text-align:center; padding:60px 20px; color:var(--text-soft); width: 100%; }
 .state-msg svg { width:48px; height:48px; opacity:.2; margin-bottom:16px; }
 .state-msg h3 { font-family:'Lora',serif; font-size:20px; color:var(--brown); margin-bottom:6px; }
 .state-msg p { font-size:14px; }
@@ -174,8 +174,8 @@ header { position:sticky; top:0; z-index:200; background:var(--brown); height:va
 <!-- HEADER -->
 <header>
   <a href="#" class="logo-wrap">
-    <span class="logo-name">Van Oude Dingen</span>
-    <span class="logo-tag">vintage · amsterdam</span>
+    <span class="logo-name">VAN OUDE DINGEN,</span>
+    <span class="logo-tag">de mensen die voorbij gaan...</span>
   </a>
   <div class="header-search">
     <svg class="search-ic" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M11 19A8 8 0 1 0 11 3a8 8 0 0 0 0 16z"/></svg>
@@ -208,7 +208,7 @@ header { position:sticky; top:0; z-index:200; background:var(--brown); height:va
   <div class="drawer-sec">Over</div>
   <a class="drawer-a" href="https://vanoudedingen.nl/over-mij/" target="_blank">Over mij</a>
   <a class="drawer-a" href="https://vanoudedingen.nl/info/" target="_blank">Info & ophalen</a>
-  <a class="drawer-a" href="https://vanoudedingen.nl/in-de-media/" target="_blank">In de media</a>
+  <a class="drawer-a" href="https://vanoudedingen.nl/in- de-media/" target="_blank">In de media</a>
   <div class="drawer-info">
     <p>Hallo! Ik ben Marlou. Al meer dan tien jaar zoek ik naar authentieke vintage stukken vol karakter. Ophalen in Amsterdam.</p>
     <a href="mailto:marlou@vanoudedingen.nl">marlou@vanoudedingen.nl →</a>
@@ -337,11 +337,80 @@ function closeDrawer() {
   document.body.style.overflow = '';
 }
 
+// ─── MASONRY MANAGER (CHANGE 2) ───────────────────────────────────────
+const Masonry = {
+  cols: [],
+  container: null,
+  
+  init() {
+    this.container = document.getElementById('tileGrid');
+    this.setupColumns();
+    window.addEventListener('resize', () => this.onResize());
+  },
+
+  getColCount() {
+    const w = window.innerWidth;
+    if (w >= 1280) return 6;
+    if (w >= 1024) return 5;
+    if (w >= 768) return 4;
+    if (w >= 540) return 3;
+    return 2;
+  },
+
+  setupColumns() {
+    this.container.innerHTML = '';
+    this.cols = [];
+    const count = this.getColCount();
+    for (let i = 0; i < count; i++) {
+      const col = document.createElement('div');
+      col.className = 'grid-col';
+      this.container.appendChild(col);
+      this.cols.push(col);
+    }
+  },
+
+  addItem(item) {
+    // Find shortest column
+    let shortest = this.cols[0];
+    let minHeight = shortest.offsetHeight;
+    
+    for (let i = 1; i < this.cols.length; i++) {
+      if (this.cols[i].offsetHeight < minHeight) {
+        shortest = this.cols[i];
+        minHeight = shortest.offsetHeight;
+      }
+    }
+    shortest.appendChild(item);
+
+    // Track height changes on image load
+    const img = item.querySelector('img');
+    if (img && !img.complete) {
+      img.onload = () => {
+        // Height updates automatically in offsetHeight for next addItem
+      };
+    }
+  },
+
+  reset() {
+    this.setupColumns();
+    renderedIds.clear();
+  },
+
+  onResize() {
+    const newCount = this.getColCount();
+    if (newCount !== this.cols.length) {
+      const tiles = Array.from(this.container.querySelectorAll('.tile, .skeleton'));
+      this.setupColumns();
+      tiles.forEach(t => this.addItem(t));
+    }
+  }
+};
+
 // ─── CATEGORY FILTER ──────────────────────────────────────────────────
 function setCat(slug, btn) {
   currentSlug = slug;
   currentPage = 1;
-  renderedIds.clear();
+  Masonry.reset();
 
   document.querySelectorAll('.cat-pill, .drawer-a, .bnav-btn').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
@@ -372,7 +441,7 @@ function onSearch() {
   clearTimeout(searchTimer);
   searchTimer = setTimeout(() => {
     currentPage = 1;
-    renderedIds.clear();
+    Masonry.reset();
     fetchInitial();
   }, 400);
 }
@@ -382,8 +451,6 @@ async function fetchInitial() {
   if (isLoading) return;
   isLoading = true;
 
-  const grid = document.getElementById('tileGrid');
-  grid.innerHTML = '';
   document.getElementById('stateMsg').innerHTML = '';
 
   // Skeletons
@@ -391,12 +458,12 @@ async function fetchInitial() {
     const s = document.createElement('div');
     s.className = 'skeleton'; s.dataset.skel = '1';
     s.innerHTML = `<div class="skeleton-img" style="height:${[180,220,150,200][i%4]}px"></div><div class="skeleton-body"><div class="skeleton-line short"></div><div class="skeleton-line"></div></div>`;
-    grid.appendChild(s);
+    Masonry.addItem(s);
   }
 
   try {
     const posts = await getPostsBatch(1);
-    grid.querySelectorAll('[data-skel]').forEach(s => s.remove());
+    document.querySelectorAll('[data-skel]').forEach(s => s.remove());
 
     if (!posts.length) {
       showEmpty('Geen items gevonden.');
@@ -412,7 +479,7 @@ async function fetchInitial() {
       backgroundLoad(2);
     }
   } catch (err) {
-    grid.querySelectorAll('[data-skel]').forEach(s => s.remove());
+    document.querySelectorAll('[data-skel]').forEach(s => s.remove());
     showError('Fout bij laden. Probeer het opnieuw.');
     isLoading = false;
   }
@@ -440,14 +507,11 @@ async function getPostsBatch(page) {
 }
 
 function renderBatch(posts) {
-  const grid = document.getElementById('tileGrid');
-  const mediaIds = posts.map(p => p.featured_media).filter(id => id > 0);
-  
   posts.forEach((post, i) => {
     if (renderedIds.has(post.id)) return;
     renderedIds.add(post.id);
     const tile = buildTile(post, i);
-    grid.appendChild(tile);
+    Masonry.addItem(tile);
     
     // CHANGE 2: Fetch media for this batch
     if (post.featured_media) {
@@ -465,9 +529,18 @@ async function fetchMedia(mediaId, tile) {
     
     const imgWrap = tile.querySelector('.img-placeholder');
     if (imgWrap && src) {
-      imgWrap.outerHTML = `<img src="${src}" alt="${escHtml(media.alt_text || '')}" loading="lazy" ${renderedIds.size <= 4 ? 'fetchpriority="high"' : ''}>`;
+      const img = document.createElement('img');
+      img.src = src;
+      img.alt = media.alt_text || '';
+      img.loading = 'lazy';
+      if (renderedIds.size <= 4) img.setAttribute('fetchpriority', 'high');
+      
+      img.onload = () => {
+        // Height recals naturally on next addItem call
+      };
+      
+      imgWrap.replaceWith(img);
       tile.dataset.img = src;
-      // High res fallback for lightbox
       tile.dataset.imgLarge = sizes?.large?.source_url || media.source_url;
     }
   } catch(e) {}
@@ -596,6 +669,7 @@ function showError(msg) {
 }
 
 // ─── BOOT ─────────────────────────────────────────────────────────────
+Masonry.init();
 fetchInitial();
 
 // Swipe detection for Lightbox Gallery
