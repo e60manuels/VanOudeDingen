@@ -25,14 +25,14 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data
-                    android:host="vanoudedingen-pwa-placeholder.web.app"
+                    android:host="vanoudedingen-bca6c.web.app"
                     android:scheme="https" />
             </intent-filter>
         </activity>
 
         <meta-data
             android:name="android.support.customtabs.trusted.DEFAULT_URL"
-            android:value="https://vanoudedingen-pwa-placeholder.web.app" />
+            android:value="https://vanoudedingen-bca6c.web.app" />
         <meta-data
             android:name="android.support.customtabs.trusted.STATUS_BAR_COLOR"
             android:value="#2C1A0E" />
