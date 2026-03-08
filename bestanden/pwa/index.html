@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#2C1A0E">
-<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Oude Dingen">
 <meta name="description" content="Vintage meubels en woonaccessoires. Authentiek, eerlijk geprijsd, ophalen in Amsterdam.">
@@ -75,12 +75,12 @@ header { position:sticky; top:0; z-index:200; background:var(--brown); height:va
 .cat-pill .n { font-size:10px; background:var(--sand-lt); color:var(--text-soft); padding:1px 5px; border-radius:10px; }
 .cat-pill.active .n { background:var(--rust); color:white; }
 
-/* PAGE TITLE (CHANGE 1) */
+/* PAGE TITLE */
 .page-bar { padding:14px 16px 10px; display:none; align-items:baseline; gap:10px; }
 .page-bar.show { display:flex; }
 .page-title { font-family:'Lora',serif; font-size:20px; font-weight:600; color:var(--brown); }
 
-/* TILE GRID (CHANGE 2 - MASONRY) */
+/* TILE GRID (MASONRY) */
 .tile-grid { display: flex; align-items: flex-start; padding:0 10px 90px; gap:10px; }
 @media(min-width:768px){.tile-grid{padding:0 14px 90px; gap:14px; }}
 .grid-col { flex: 1; display: flex; flex-direction: column; min-width: 0; }
@@ -117,7 +117,7 @@ header { position:sticky; top:0; z-index:200; background:var(--brown); height:va
 .state-msg p { font-size:14px; }
 .retry-btn { margin-top:16px; display:inline-block; background:var(--rust); color:white; border:none; padding:10px 24px; border-radius:4px; font-family:'Jost',sans-serif; font-size:13px; cursor:pointer; }
 
-/* LIGHTBOX (CHANGE 3) */
+/* LIGHTBOX */
 .lightbox { position:fixed; inset:0; z-index:500; background:rgba(20,10,5,.96); display:none; flex-direction:column; padding-top:calc(10px + var(--safe-top)); overflow-y:auto; overflow-x:hidden; }
 .lightbox.open { display:flex; }
 .lb-close { position:fixed; top:calc(16px + var(--safe-top)); right:16px; background:rgba(255,255,255,.15); border:none; color:white; width:40px; height:40px; border-radius:50%; font-size:24px; cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:20; backdrop-filter:blur(4px); }
@@ -208,7 +208,7 @@ header { position:sticky; top:0; z-index:200; background:var(--brown); height:va
   <div class="drawer-sec">Over</div>
   <a class="drawer-a" href="https://vanoudedingen.nl/over-mij/" target="_blank">Over mij</a>
   <a class="drawer-a" href="https://vanoudedingen.nl/info/" target="_blank">Info & ophalen</a>
-  <a class="drawer-a" href="https://vanoudedingen.nl/in- de-media/" target="_blank">In de media</a>
+  <a class="drawer-a" href="https://vanoudedingen.nl/in-de-media/" target="_blank">In de media</a>
   <div class="drawer-info">
     <p>Hallo! Ik ben Marlou. Al meer dan tien jaar zoek ik naar authentieke vintage stukken vol karakter. Ophalen in Amsterdam.</p>
     <a href="mailto:marlou@vanoudedingen.nl">marlou@vanoudedingen.nl →</a>
@@ -243,7 +243,7 @@ header { position:sticky; top:0; z-index:200; background:var(--brown); height:va
 <div class="tile-grid" id="tileGrid"></div>
 <div id="stateMsg"></div>
 
-<!-- LIGHTBOX (CHANGE 3) -->
+<!-- LIGHTBOX -->
 <div class="lightbox" id="lightbox">
   <button class="lb-close" onclick="closeLb()">✕</button>
   <div class="lb-content">
@@ -337,7 +337,7 @@ function closeDrawer() {
   document.body.style.overflow = '';
 }
 
-// ─── MASONRY MANAGER (CHANGE 2) ───────────────────────────────────────
+// ─── MASONRY MANAGER ──────────────────────────────────────────────────
 const Masonry = {
   cols: [],
   container: null,
@@ -370,7 +370,6 @@ const Masonry = {
   },
 
   addItem(item) {
-    // Find shortest column
     let shortest = this.cols[0];
     let minHeight = shortest.offsetHeight;
     
@@ -381,14 +380,6 @@ const Masonry = {
       }
     }
     shortest.appendChild(item);
-
-    // Track height changes on image load
-    const img = item.querySelector('img');
-    if (img && !img.complete) {
-      img.onload = () => {
-        // Height updates automatically in offsetHeight for next addItem
-      };
-    }
   },
 
   reset() {
@@ -446,7 +437,7 @@ function onSearch() {
   }, 400);
 }
 
-// ─── FETCH INITIAL (CHANGE 2) ─────────────────────────────────────────
+// ─── FETCH INITIAL (NOW WITH _EMBED) ──────────────────────────────────
 async function fetchInitial() {
   if (isLoading) return;
   isLoading = true;
@@ -474,7 +465,6 @@ async function fetchInitial() {
     renderBatch(posts);
     isLoading = false;
 
-    // Start background loading if there's more
     if (totalPages > 1) {
       backgroundLoad(2);
     }
@@ -485,9 +475,9 @@ async function fetchInitial() {
   }
 }
 
-// ─── LEAN API CALLS ───────────────────────────────────────────────────
+// ─── API BATCH (WITH _EMBED) ──────────────────────────────────────────
 async function getPostsBatch(page) {
-  let url = `${WP_BASE}/posts?per_page=${BATCH_SIZE}&page=${page}&_fields=id,title,date,slug,categories,featured_media,link`;
+  let url = `${WP_BASE}/posts?per_page=${BATCH_SIZE}&page=${page}&_embed=1&_fields=id,title,date,slug,categories,featured_media,link,content,_links,_embedded`;
   
   const search = document.getElementById('searchInput').value.trim();
   if (search) {
@@ -512,49 +502,10 @@ function renderBatch(posts) {
     renderedIds.add(post.id);
     const tile = buildTile(post, i);
     Masonry.addItem(tile);
-    
-    // CHANGE 2: Fetch media for this batch
-    if (post.featured_media) {
-      fetchMedia(post.featured_media, tile);
-    }
   });
 }
 
-async function fetchMedia(mediaId, tile) {
-  try {
-    const resp = await fetch(`${WP_BASE}/media/${mediaId}?_fields=id,media_details,source_url,alt_text`);
-    const media = await resp.json();
-    const sizes = media.media_details?.sizes;
-    const src = sizes?.medium?.source_url || sizes?.thumbnail?.source_url || media.source_url;
-    
-    const imgWrap = tile.querySelector('.img-placeholder');
-    if (imgWrap && src) {
-      const img = document.createElement('img');
-      img.src = src;
-      img.alt = media.alt_text || '';
-      img.loading = 'lazy';
-      if (renderedIds.size <= 4) img.setAttribute('fetchpriority', 'high');
-      
-      img.onload = () => {
-        // Height recals naturally on next addItem call
-      };
-      
-      imgWrap.replaceWith(img);
-      tile.dataset.img = src;
-      tile.dataset.imgLarge = sizes?.large?.source_url || media.source_url;
-    }
-  } catch(e) {}
-}
-
-async function backgroundLoad(page) {
-  if (page > totalPages) return;
-  await new Promise(r => setTimeout(r, 800)); // Delay per requirements
-  const posts = await getPostsBatch(page);
-  renderBatch(posts);
-  backgroundLoad(page + 1);
-}
-
-// ─── BUILD TILE ───────────────────────────────────────────────────────
+// ─── BUILD TILE (DIRECT FROM EMBED) ───────────────────────────────────
 function buildTile(post, index) {
   const tile = document.createElement('div');
   tile.className = 'tile';
@@ -562,16 +513,27 @@ function buildTile(post, index) {
 
   const title = stripHtml(post.title.rendered);
   const date = new Date(post.date).toLocaleDateString('nl-NL', {month:'long', year:'numeric'});
+  
+  // Extract images from embedded media (no fetch() needed!)
+  let src = '';
+  let srcLarge = '';
+  try {
+    const media = post._embedded?.['wp:featuredmedia']?.[0];
+    if (media) {
+      src = media.media_details?.sizes?.medium?.source_url || media.source_url;
+      srcLarge = media.media_details?.sizes?.large?.source_url || media.source_url;
+    }
+  } catch(e) {}
+
   const isSold = title.toLowerCase().includes('verkocht');
   const isRes  = title.toLowerCase().includes('gereserveerd');
-  
   let badge = '';
   if (isSold) badge = '<div class="tile-badge sold">Verkocht</div>';
   else if (isRes) badge = '<div class="tile-badge res">Gereserveerd</div>';
 
   tile.innerHTML = `
     ${badge}
-    <div class="img-placeholder" style="aspect-ratio:1;background:var(--sand-lt)"></div>
+    ${src ? `<img src="${src}" alt="" loading="lazy" ${renderedIds.size <= 4 ? 'fetchpriority="high"' : ''}>` : `<div style="aspect-ratio:1;background:var(--sand-lt)"></div>`}
     <div class="tile-body">
       <div class="tile-title">${escHtml(title)}</div>
       <div class="tile-date">${date}</div>
@@ -580,18 +542,27 @@ function buildTile(post, index) {
   tile.dataset.id = post.id;
   tile.dataset.title = title;
   tile.dataset.url = post.link;
-  tile.addEventListener('click', () => openLb(tile));
+  tile.dataset.img = src;
+  tile.dataset.imgLarge = srcLarge;
+  tile.addEventListener('click', () => openLb(tile, post));
   return tile;
 }
 
-// ─── LIGHTBOX (CHANGE 3) ──────────────────────────────────────────────
-async function openLb(tile) {
+async function backgroundLoad(page) {
+  if (page > totalPages) return;
+  await new Promise(r => setTimeout(r, 800));
+  const posts = await getPostsBatch(page);
+  renderBatch(posts);
+  backgroundLoad(page + 1);
+}
+
+// ─── LIGHTBOX (BYPASS CORS FOR MEDIA) ─────────────────────────────────
+async function openLb(tile, post) {
   lbPostId = tile.dataset.id;
   const lb = document.getElementById('lightbox');
   const mainImg = document.getElementById('lbImg');
   
-  // Reset + Show immediate data
-  mainImg.src = tile.dataset.img || '';
+  mainImg.src = tile.dataset.imgLarge || tile.dataset.img || '';
   document.getElementById('lbTitle').textContent = tile.dataset.title;
   document.getElementById('lbDesc').textContent = '';
   document.getElementById('lbGallery').innerHTML = '';
@@ -603,47 +574,40 @@ async function openLb(tile) {
   lb.scrollTo(0,0);
   document.body.style.overflow = 'hidden';
 
-  // Parallel calls (Fix 1)
-  const p1 = fetch(`${WP_BASE}/posts/${lbPostId}?_fields=content`);
-  const p2 = fetch(`${WP_BASE}/media?parent=${lbPostId}&_fields=id,source_url,media_details,alt_text&per_page=20`);
-
   try {
-    const [r1, r2] = await Promise.all([p1, p2]);
-    if (!r1.ok || !r2.ok) throw new Error('API Error');
+    // Only fetch description (Text API usually has no CORS issue)
+    const resp = await fetch(`${WP_BASE}/posts/${lbPostId}?_fields=content`);
+    const postData = await resp.json();
     
-    const [postData, mediaItems] = await Promise.all([r1.json(), r2.json()]);
-
-    if (lbPostId !== tile.dataset.id) return; // Guard against rapid clicks
-
-    // Update Content
+    if (lbPostId !== tile.dataset.id) return;
     document.getElementById('lbSkel').classList.remove('show');
     document.getElementById('lbDesc').textContent = stripHtml(postData.content.rendered).trim();
 
-    // Update Gallery
-    if (mediaItems.length > 0) {
+    // For Gallery: Try parsing image URLs from post content to bypass blocked media API
+    const content = postData.content.rendered;
+    const imgRegex = /<img[^>]+src=["']([^"']+)["']/g;
+    let match;
+    const galleryUrls = [];
+    while ((match = imgRegex.exec(content)) !== null) {
+      if (!galleryUrls.includes(match[1])) galleryUrls.push(match[1]);
+    }
+
+    if (galleryUrls.length > 0) {
       const gallery = document.getElementById('lbGallery');
-      mediaItems.forEach((m, idx) => {
+      galleryUrls.forEach((url, idx) => {
         const thumb = document.createElement('div');
         thumb.className = `lb-thumb ${idx === 0 ? 'active' : ''}`;
-        const tSrc = m.media_details?.sizes?.thumbnail?.source_url || m.source_url;
-        const lSrc = m.media_details?.sizes?.large?.source_url || m.source_url;
-        
-        thumb.innerHTML = `<img src="${tSrc}" alt="">`;
+        thumb.innerHTML = `<img src="${url}" alt="">`;
         thumb.onclick = () => {
           document.querySelectorAll('.lb-thumb').forEach(t => t.classList.remove('active'));
           thumb.classList.add('active');
-          mainImg.src = lSrc;
+          mainImg.src = url;
         };
         gallery.appendChild(thumb);
-        if (idx === 0 && !tile.dataset.imgLarge) mainImg.src = lSrc;
       });
-      if (tile.dataset.imgLarge) mainImg.src = tile.dataset.imgLarge;
     }
   } catch(e) {
-    if (lbPostId === tile.dataset.id) {
-      document.getElementById('lbSkel').classList.remove('show');
-      document.getElementById('lbDesc').innerHTML = '<p style="color:var(--rust)">Kon details niet laden. Controleer je verbinding.</p>';
-    }
+    document.getElementById('lbSkel').classList.remove('show');
   }
 }
 
@@ -678,7 +642,7 @@ function showError(msg) {
 Masonry.init();
 fetchInitial();
 
-// Swipe detection for Lightbox Gallery
+// Swipe detection
 let touchStartX = 0;
 document.getElementById('lbMainWrap').addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX);
 document.getElementById('lbMainWrap').addEventListener('touchend', e => {
