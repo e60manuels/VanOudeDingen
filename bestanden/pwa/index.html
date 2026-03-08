@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#2C1A0E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Oude Dingen">
+<meta name="description" content="Vintage meubels en woonaccessoires. Authentiek, eerlijk geprijsd, ophalen in Amsterdam.">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<title>Van Oude Dingen</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #F5F0E8; --surface: #FDFAF5; --brown: #2C1A0E; --brown-mid: #5C3D2A;
+  --rust: #A0442A; --gold: #B8924A; --sand: #DDD0B8; --sand-lt: #EDE5D4;
+  --text-soft: #7A6355; --header-h: 56px;
+  --safe-top: env(safe-area-inset-top,0px); --safe-bot: env(safe-area-inset-bottom,0px);
+}
+html { scroll-behavior: smooth; }
+body { font-family: 'Jost', sans-serif; background: var(--bg); color: var(--brown); overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
+
+/* INSTALL BANNER */
+#installBanner { display:none; align-items:center; justify-content:space-between; gap:12px; background:var(--brown); color:var(--sand); padding:10px 16px; padding-top:calc(10px + var(--safe-top)); font-size:13px; }
+#installBanner.show { display:flex; }
+#installBanner strong { color:white; }
+.install-btn { background:var(--rust); color:white; border:none; padding:6px 14px; border-radius:20px; font-family:'Jost',sans-serif; font-size:12px; font-weight:500; cursor:pointer; white-space:nowrap; flex-shrink:0; }
+.install-x { background:none; border:none; color:var(--sand); font-size:18px; cursor:pointer; opacity:.6; flex-shrink:0; }
+
+/* HEADER */
+header { position:sticky; top:0; z-index:200; background:var(--brown); height:var(--header-h); display:flex; align-items:center; padding:0 16px; gap:12px; box-shadow:0 2px 12px rgba(44,26,14,.3); }
+.logo-wrap { display:flex; flex-direction:column; text-decoration:none; flex-shrink:0; }
+.logo-name { font-family:'Lora',serif; font-size:18px; font-weight:600; color:#FDFAF5; line-height:1.1; }
+.logo-tag { font-size:9px; font-weight:300; letter-spacing:.2em; text-transform:uppercase; color:var(--gold); margin-top:1px; }
+.header-search { flex:1; position:relative; max-width:300px; margin-left:auto; }
+.header-search input { width:100%; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.15); border-radius:20px; padding:7px 14px 7px 34px; color:white; font-family:'Jost',sans-serif; font-size:13px; outline:none; transition:.2s; }
+.header-search input::placeholder { color:rgba(255,255,255,.4); }
+.header-search input:focus { background:rgba(255,255,255,.18); border-color:rgba(255,255,255,.3); }
+.search-ic { position:absolute; left:10px; top:50%; transform:translateY(-50%); width:15px; height:15px; color:rgba(255,255,255,.4); }
+.hamburger { background:none; border:none; cursor:pointer; padding:4px; display:flex; flex-direction:column; gap:4px; flex-shrink:0; }
+.hamburger span { display:block; width:20px; height:1.5px; background:rgba(255,255,255,.8); border-radius:2px; transition:.25s; }
+.hamburger.open span:nth-child(1) { transform:translateY(5.5px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity:0; }
+.hamburger.open span:nth-child(3) { transform:translateY(-5.5px) rotate(-45deg); }
+
+/* DRAWER */
+.overlay { position:fixed; inset:0; background:rgba(44,26,14,.5); z-index:300; opacity:0; pointer-events:none; transition:.3s; }
+.overlay.open { opacity:1; pointer-events:all; }
+.drawer { position:fixed; top:0; right:0; width:min(300px,85vw); height:100%; background:var(--surface); z-index:400; transform:translateX(100%); transition:transform .3s cubic-bezier(.4,0,.2,1); overflow-y:auto; padding-bottom:var(--safe-bot); }
+.drawer.open { transform:translateX(0); }
+.drawer-hd { background:var(--brown); padding:20px; padding-top:calc(20px + var(--safe-top)); }
+.drawer-hd-name { font-family:'Lora',serif; font-size:20px; color:#FDFAF5; margin-bottom:4px; }
+.drawer-hd-sub { font-size:11px; letter-spacing:.15em; text-transform:uppercase; color:var(--gold); }
+.drawer-sec { font-size:10px; font-weight:500; letter-spacing:.2em; text-transform:uppercase; color:var(--rust); padding:20px 20px 8px; }
+.drawer-a { display:flex; justify-content:space-between; align-items:center; padding:12px 20px; text-decoration:none; color:var(--brown-mid); font-size:15px; border-bottom:1px solid var(--sand-lt); cursor:pointer; transition:.15s; }
+.drawer-a:hover, .drawer-a.active { background:var(--sand-lt); color:var(--rust); }
+.drawer-a .badge { font-size:11px; background:var(--sand); color:var(--brown-mid); padding:2px 8px; border-radius:20px; }
+.drawer-a.active .badge { background:var(--rust); color:white; }
+.drawer-info { padding:20px; }
+.drawer-info p { font-size:13px; color:var(--text-soft); line-height:1.6; margin-bottom:12px; }
+.drawer-info a { font-size:13px; color:var(--rust); text-decoration:none; font-weight:500; }
+
+/* CAT BAR */
+.cat-bar { background:var(--surface); border-bottom:1px solid var(--sand); overflow-x:auto; scrollbar-width:none; -webkit-overflow-scrolling:touch; position:sticky; top:var(--header-h); z-index:100; }
+.cat-bar::-webkit-scrollbar { display:none; }
+.cat-bar-inner { display:flex; padding:0 12px; min-width:max-content; }
+.cat-pill { display:inline-flex; align-items:center; gap:5px; padding:10px 14px; font-size:12px; color:var(--text-soft); border-bottom:2px solid transparent; cursor:pointer; white-space:nowrap; background:none; border-top:none; border-left:none; border-right:none; transition:.2s; }
+.cat-pill:hover { color:var(--rust); }
+.cat-pill.active { color:var(--rust); border-bottom-color:var(--rust); font-weight:500; }
+.cat-pill .n { font-size:10px; background:var(--sand-lt); color:var(--text-soft); padding:1px 5px; border-radius:10px; }
+.cat-pill.active .n { background:var(--rust); color:white; }
+
+/* PAGE TITLE */
+.page-bar { padding:14px 16px 10px; display:flex; align-items:baseline; gap:10px; }
+.page-title { font-family:'Lora',serif; font-size:20px; font-weight:600; color:var(--brown); }
+.page-count { font-size:12px; color:var(--text-soft); }
+
+/* TILE GRID */
+.tile-grid { columns:2; column-gap:10px; padding:0 10px 90px; }
+@media(min-width:540px){.tile-grid{columns:3}}
+@media(min-width:768px){.tile-grid{columns:4;column-gap:14px;padding:0 14px 90px}}
+@media(min-width:1024px){.tile-grid{columns:5}}
+@media(min-width:1280px){.tile-grid{columns:6}}
+
+.tile { break-inside:avoid; margin-bottom:10px; background:var(--surface); border-radius:8px; overflow:hidden; cursor:pointer; position:relative; transition:transform .2s,box-shadow .2s; animation:tileIn .4s ease backwards; }
+.tile:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(44,26,14,.14); }
+.tile:active { transform:scale(.98); }
+@keyframes tileIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+.tile img { width:100%; display:block; transition:transform .4s; }
+.tile:hover img { transform:scale(1.03); }
+.tile-body { padding:8px 10px 10px; }
+.tile-cat { font-size:9px; font-weight:500; letter-spacing:.15em; text-transform:uppercase; color:var(--rust); margin-bottom:3px; }
+.tile-title { font-family:'Lora',serif; font-size:13px; font-weight:500; color:var(--brown); line-height:1.35; }
+.tile-date { font-size:10px; color:var(--text-soft); margin-top:4px; opacity:.7; }
+.tile-badge { position:absolute; top:8px; left:8px; background:var(--rust); color:white; font-size:9px; font-weight:500; letter-spacing:.08em; text-transform:uppercase; padding:3px 7px; border-radius:4px; pointer-events:none; }
+.tile-badge.sold { background:rgba(44,26,14,.75); }
+.tile-badge.res  { background:rgba(90,120,85,.85); }
+.tile.inspo .tile-body { display:none; }
+
+/* SKELETON LOADING */
+.skeleton { background:var(--sand-lt); border-radius:8px; overflow:hidden; break-inside:avoid; margin-bottom:10px; }
+.skeleton-img { background:linear-gradient(90deg,var(--sand-lt) 25%,var(--sand) 50%,var(--sand-lt) 75%); background-size:200% 100%; animation:shimmer 1.4s infinite; }
+@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+.skeleton-body { padding:10px; }
+.skeleton-line { height:10px; background:linear-gradient(90deg,var(--sand-lt) 25%,var(--sand) 50%,var(--sand-lt) 75%); background-size:200% 100%; animation:shimmer 1.4s infinite; border-radius:4px; margin-bottom:6px; }
+.skeleton-line.short { width:60%; }
+
+/* LOAD MORE */
+.load-more-wrap { text-align:center; padding:16px 0 24px; }
+.load-more-btn { background:var(--brown); color:var(--surface); border:none; padding:12px 32px; border-radius:4px; font-family:'Jost',sans-serif; font-size:13px; font-weight:500; cursor:pointer; transition:.2s; }
+.load-more-btn:hover { background:var(--rust); }
+.load-more-btn:disabled { opacity:.4; cursor:not-allowed; }
+
+/* EMPTY + ERROR */
+.state-msg { text-align:center; padding:60px 20px; color:var(--text-soft); }
+.state-msg svg { width:48px; height:48px; opacity:.2; margin-bottom:16px; }
+.state-msg h3 { font-family:'Lora',serif; font-size:20px; color:var(--brown); margin-bottom:6px; }
+.state-msg p { font-size:14px; }
+.retry-btn { margin-top:16px; display:inline-block; background:var(--rust); color:white; border:none; padding:10px 24px; border-radius:4px; font-family:'Jost',sans-serif; font-size:13px; cursor:pointer; }
+
+/* LIGHTBOX */
+.lightbox { position:fixed; inset:0; z-index:500; background:rgba(20,10,5,.92); display:none; flex-direction:column; align-items:center; justify-content:center; padding:16px; padding-top:calc(16px + var(--safe-top)); padding-bottom:calc(16px + var(--safe-bot)); overflow-y:auto; }
+.lightbox.open { display:flex; }
+.lb-close { position:fixed; top:calc(16px + var(--safe-top)); right:16px; background:rgba(255,255,255,.1); border:none; color:white; width:36px; height:36px; border-radius:50%; font-size:20px; cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:10; }
+.lb-img { max-width:100%; max-height:65vh; object-fit:contain; border-radius:4px; display:block; }
+.lb-info { margin-top:16px; text-align:center; max-width:480px; }
+.lb-cat { font-size:10px; font-weight:500; letter-spacing:.2em; text-transform:uppercase; color:var(--gold); margin-bottom:6px; }
+.lb-title { font-family:'Lora',serif; font-size:20px; font-weight:600; color:white; margin-bottom:8px; line-height:1.3; }
+.lb-desc { font-size:14px; color:rgba(255,255,255,.6); line-height:1.6; margin-bottom:16px; }
+.lb-cta { display:inline-block; background:var(--rust); color:white; padding:11px 28px; border-radius:4px; text-decoration:none; font-size:13px; font-weight:500; }
+.lb-cta:hover { background:#8E3F22; }
+
+/* BOTTOM NAV */
+.bottom-nav { position:fixed; bottom:0; left:0; right:0; z-index:150; background:var(--surface); border-top:1px solid var(--sand); display:flex; padding-bottom:var(--safe-bot); box-shadow:0 -4px 20px rgba(44,26,14,.08); }
+@media(min-width:768px){.bottom-nav{display:none}}
+.bnav-btn { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; padding:8px 4px; background:none; border:none; cursor:pointer; color:var(--text-soft); font-family:'Jost',sans-serif; font-size:10px; transition:.2s; }
+.bnav-btn.active { color:var(--rust); }
+.bnav-btn svg { width:22px; height:22px; }
+
+/* OFFLINE TOAST */
+#offlineToast { position:fixed; bottom:calc(70px + var(--safe-bot)); left:50%; transform:translateX(-50%) translateY(20px); background:var(--brown); color:var(--sand); padding:10px 20px; border-radius:20px; font-size:13px; opacity:0; transition:.3s; pointer-events:none; z-index:600; white-space:nowrap; }
+#offlineToast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+@media(min-width:768px){#offlineToast{bottom:calc(20px + var(--safe-bot))}}
+</style>
+</head>
+<body>
+
+<!-- PWA INSTALL BANNER -->
+<div id="installBanner">
+  <div><strong>Installeer als app</strong> — gebruik offline</div>
+  <button class="install-btn" id="installBtn">Installeren</button>
+  <button class="install-x" id="dismissBanner">✕</button>
+</div>
+
+<!-- HEADER -->
+<header>
+  <a href="#" class="logo-wrap">
+    <span class="logo-name">Van Oude Dingen</span>
+    <span class="logo-tag">vintage · amsterdam</span>
+  </a>
+  <div class="header-search">
+    <svg class="search-ic" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M11 19A8 8 0 1 0 11 3a8 8 0 0 0 0 16z"/></svg>
+    <input type="search" id="searchInput" placeholder="Zoeken…" oninput="onSearch()" autocomplete="off">
+  </div>
+  <button class="hamburger" id="menuBtn" onclick="toggleDrawer()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+
+<!-- DRAWER OVERLAY + DRAWER -->
+<div class="overlay" id="overlay" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-hd">
+    <div class="drawer-hd-name">Van Oude Dingen</div>
+    <div class="drawer-hd-sub">vintage meubels & accessoires</div>
+  </div>
+  <div class="drawer-sec">Categorieën</div>
+  <a class="drawer-a active" onclick="setCat('',this)">Alles</a>
+  <a class="drawer-a" onclick="setCat('kasten',this)">Kasten</a>
+  <a class="drawer-a" onclick="setCat('lampen',this)">Lampen</a>
+  <a class="drawer-a" onclick="setCat('accessoires',this)">Accessoires</a>
+  <a class="drawer-a" onclick="setCat('tafels',this)">Tafels</a>
+  <a class="drawer-a" onclick="setCat('keramiek',this)">Keramiek</a>
+  <a class="drawer-a" onclick="setCat('banken-en-fauteuils',this)">Banken & fauteuils</a>
+  <a class="drawer-a" onclick="setCat('baby-kind',this)">Baby & kind</a>
+  <a class="drawer-a" onclick="setCat('stoelen',this)">Stoelen</a>
+  <a class="drawer-a" onclick="setCat('inspiratie',this)">Inspiratie</a>
+  <a class="drawer-a" onclick="setCat('verkocht-sold',this)">Verkocht</a>
+  <div class="drawer-sec">Over</div>
+  <a class="drawer-a" href="https://vanoudedingen.nl/over-mij/" target="_blank">Over mij</a>
+  <a class="drawer-a" href="https://vanoudedingen.nl/info/" target="_blank">Info & ophalen</a>
+  <a class="drawer-a" href="https://vanoudedingen.nl/in-de-media/" target="_blank">In de media</a>
+  <div class="drawer-info">
+    <p>Hallo! Ik ben Marlou. Al meer dan tien jaar zoek ik naar authentieke vintage stukken vol karakter. Ophalen in Amsterdam.</p>
+    <a href="mailto:marlou@vanoudedingen.nl">marlou@vanoudedingen.nl →</a>
+  </div>
+</div>
+
+<!-- CATEGORY BAR -->
+<nav class="cat-bar">
+  <div class="cat-bar-inner" id="catBar">
+    <button class="cat-pill active" onclick="setCat('',this)">Alles</button>
+    <button class="cat-pill" onclick="setCat('kasten',this)">Kasten</button>
+    <button class="cat-pill" onclick="setCat('lampen',this)">Lampen</button>
+    <button class="cat-pill" onclick="setCat('accessoires',this)">Accessoires</button>
+    <button class="cat-pill" onclick="setCat('tafels',this)">Tafels</button>
+    <button class="cat-pill" onclick="setCat('keramiek',this)">Keramiek</button>
+    <button class="cat-pill" onclick="setCat('banken-en-fauteuils',this)">Banken</button>
+    <button class="cat-pill" onclick="setCat('baby-kind',this)">Baby & kind</button>
+    <button class="cat-pill" onclick="setCat('stoelen',this)">Stoelen</button>
+    <button class="cat-pill" onclick="setCat('inspiratie',this)">Inspiratie</button>
+  </div>
+</nav>
+
+<!-- PAGE TITLE -->
+<div class="page-bar">
+  <h1 class="page-title" id="pageTitle">Nieuwste items</h1>
+  <span class="page-count" id="pageCount"></span>
+</div>
+
+<!-- TILE GRID -->
+<div class="tile-grid" id="tileGrid"></div>
+<div id="stateMsg"></div>
+<div class="load-more-wrap" id="loadMoreWrap" style="display:none">
+  <button class="load-more-btn" id="loadMoreBtn" onclick="loadMore()">Meer laden</button>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox">
+  <button class="lb-close" onclick="closeLb()">✕</button>
+  <img class="lb-img" id="lbImg" src="" alt="">
+  <div class="lb-info">
+    <div class="lb-cat" id="lbCat"></div>
+    <div class="lb-title" id="lbTitle"></div>
+    <div class="lb-desc" id="lbDesc"></div>
+    <a href="mailto:marlou@vanoudedingen.nl" class="lb-cta">Interesse? Mail mij →</a>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<nav class="bottom-nav">
+  <button class="bnav-btn active" onclick="setCat('',this);setBA(this)">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+    <span>Alles</span>
+  </button>
+  <button class="bnav-btn" onclick="setCat('lampen',this);setBA(this)">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+    <span>Lampen</span>
+  </button>
+  <button class="bnav-btn" onclick="setCat('kasten',this);setBA(this)">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2" stroke-width="1.5"/><line x1="3" y1="12" x2="21" y2="12" stroke-width="1.5"/></svg>
+    <span>Kasten</span>
+  </button>
+  <button class="bnav-btn" onclick="setCat('accessoires',this);setBA(this)">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="9" stroke-width="1.5"/><path d="M12 8v4l3 3" stroke-width="1.5" stroke-linecap="round"/></svg>
+    <span>Meer</span>
+  </button>
+  <button class="bnav-btn" onclick="toggleDrawer()">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16"/></svg>
+    <span>Menu</span>
+  </button>
+</nav>
+
+<div id="offlineToast">📵 Geen internetverbinding</div>
+
+<script>
+// ─── CONFIG ───────────────────────────────────────────────────────────
+const WP_BASE = 'https://vanoudedingen.nl/wp-json/wp/v2';
+const PER_PAGE = 24;
+
+// ─── STATE ────────────────────────────────────────────────────────────
+let currentSlug = '';   // category slug, '' = all
+let currentPage = 1;
+let totalPages  = 1;
+let isLoading   = false;
+let searchTimer = null;
+let categoryMap = {};   // slug → id
+
+// ─── SERVICE WORKER ───────────────────────────────────────────────────
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').catch(() => {});
+}
+
+// ─── PWA INSTALL ──────────────────────────────────────────────────────
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault(); deferredPrompt = e;
+  document.getElementById('installBanner').classList.add('show');
+});
+document.getElementById('installBtn').addEventListener('click', async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  await deferredPrompt.userChoice;
+  deferredPrompt = null;
+  document.getElementById('installBanner').classList.remove('show');
+});
+document.getElementById('dismissBanner').addEventListener('click', () =>
+  document.getElementById('installBanner').classList.remove('show'));
+
+// ─── OFFLINE ──────────────────────────────────────────────────────────
+window.addEventListener('offline', () => showToast('📵 Geen internetverbinding'));
+window.addEventListener('online',  () => showToast('✅ Verbinding hersteld'));
+function showToast(msg) {
+  const t = document.getElementById('offlineToast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ─── DRAWER ───────────────────────────────────────────────────────────
+function toggleDrawer() {
+  const open = document.getElementById('drawer').classList.contains('open');
+  document.getElementById('drawer').classList.toggle('open', !open);
+  document.getElementById('overlay').classList.toggle('open', !open);
+  document.getElementById('menuBtn').classList.toggle('open', !open);
+  document.body.style.overflow = open ? '' : 'hidden';
+}
+function closeDrawer() {
+  document.getElementById('drawer').classList.remove('open');
+  document.getElementById('overlay').classList.remove('open');
+  document.getElementById('menuBtn').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// ─── CATEGORY FILTER ──────────────────────────────────────────────────
+function setCat(slug, btn) {
+  currentSlug = slug;
+  currentPage = 1;
+
+  // Update cat bar
+  document.querySelectorAll('.cat-pill').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.drawer-a').forEach(b => b.classList.remove('active'));
+  if (btn) {
+    if (btn.classList.contains('cat-pill')) btn.classList.add('active');
+    if (btn.classList.contains('drawer-a')) btn.classList.add('active');
+  }
+
+  const titles = {
+    '':'Nieuwste items','kasten':'Kasten','lampen':'Lampen',
+    'accessoires':'Accessoires','tafels':'Tafels','keramiek':'Keramiek',
+    'banken-en-fauteuils':'Banken & fauteuils','baby-kind':'Baby & kind',
+    'stoelen':'Stoelen','inspiratie':'Inspiratie','verkocht-sold':'Verkocht'
+  };
+  document.getElementById('pageTitle').textContent = titles[slug] ?? slug;
+  document.getElementById('searchInput').value = '';
+
+  closeDrawer();
+  fetchPosts(true);
+}
+
+// ─── SEARCH ───────────────────────────────────────────────────────────
+function onSearch() {
+  clearTimeout(searchTimer);
+  searchTimer = setTimeout(() => {
+    currentPage = 1;
+    fetchPosts(true);
+  }, 400);
+}
+
+// ─── FETCH POSTS ──────────────────────────────────────────────────────
+async function fetchPosts(reset = false) {
+  if (isLoading) return;
+  isLoading = true;
+
+  const grid   = document.getElementById('tileGrid');
+  const btn    = document.getElementById('loadMoreBtn');
+  const wrap   = document.getElementById('loadMoreWrap');
+  const search = document.getElementById('searchInput').value.trim();
+
+  if (reset) {
+    grid.innerHTML = '';
+    document.getElementById('stateMsg').innerHTML = '';
+    wrap.style.display = 'none';
+  }
+
+  // Show skeletons
+  const skels = 8;
+  const heights = [160,200,140,220,180,150,210,170];
+  for (let i = 0; i < skels; i++) {
+    const s = document.createElement('div');
+    s.className = 'skeleton'; s.dataset.skel = '1';
+    s.innerHTML = `<div class="skeleton-img" style="height:${heights[i%8]}px"></div>
+      <div class="skeleton-body">
+        <div class="skeleton-line short"></div>
+        <div class="skeleton-line"></div>
+        <div class="skeleton-line short"></div>
+      </div>`;
+    grid.appendChild(s);
+  }
+
+  try {
+    // Build API URL
+    let url = `${WP_BASE}/posts?per_page=${PER_PAGE}&page=${currentPage}&_embed=1`;
+
+    if (search) {
+      url += `&search=${encodeURIComponent(search)}`;
+    } else if (currentSlug) {
+      // Get category id from slug if we don't have it cached
+      if (!categoryMap[currentSlug]) {
+        const catResp = await fetch(`${WP_BASE}/categories?slug=${currentSlug}`);
+        const cats = await catResp.json();
+        if (cats.length) categoryMap[currentSlug] = cats[0].id;
+      }
+      if (categoryMap[currentSlug]) {
+        url += `&categories=${categoryMap[currentSlug]}`;
+      }
+    }
+
+    const resp = await fetch(url);
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+
+    totalPages = parseInt(resp.headers.get('X-WP-TotalPages') || '1');
+    const total = parseInt(resp.headers.get('X-WP-Total') || '0');
+    const posts = await resp.json();
+
+    // Remove skeletons
+    grid.querySelectorAll('[data-skel]').forEach(s => s.remove());
+
+    if (posts.length === 0 && reset) {
+      showEmpty(search ? `Geen resultaten voor "${search}"` : 'Geen items gevonden in deze categorie.');
+      isLoading = false;
+      return;
+    }
+
+    document.getElementById('pageCount').textContent = total > 0 ? `${total} items` : '';
+
+    posts.forEach((post, i) => {
+      const tile = buildTile(post, i);
+      grid.appendChild(tile);
+    });
+
+    // Load more button
+    wrap.style.display = currentPage < totalPages ? 'block' : 'none';
+    if (btn) btn.disabled = false;
+
+  } catch (err) {
+    grid.querySelectorAll('[data-skel]').forEach(s => s.remove());
+    console.error(err);
+
+    if (!navigator.onLine) {
+      showError('Geen internetverbinding. Controleer je verbinding en probeer opnieuw.');
+    } else {
+      showError('Kon items niet laden. Mogelijk blokkeert de site externe toegang (CORS). Probeer het later opnieuw.');
+    }
+  }
+
+  isLoading = false;
+}
+
+// ─── BUILD TILE FROM WP POST ──────────────────────────────────────────
+function buildTile(post, index) {
+  const tile = document.createElement('div');
+  tile.className = 'tile';
+  tile.style.animationDelay = Math.min(index * 0.04, 0.5) + 's';
+
+  // Image: prefer featured media, fallback to first image in content
+  let imgSrc = '';
+  let imgAlt = '';
+  try {
+    const media = post._embedded?.['wp:featuredmedia']?.[0];
+    if (media) {
+      // Try medium_large first, fallback to full
+      imgSrc = media.media_details?.sizes?.medium_large?.source_url
+            || media.media_details?.sizes?.medium?.source_url
+            || media.source_url;
+      imgAlt = media.alt_text || stripHtml(post.title.rendered);
+    }
+  } catch(e) {}
+
+  // If no featured image, try extracting first img from content
+  if (!imgSrc) {
+    const match = post.content?.rendered?.match(/<img[^>]+src=["']([^"']+)["']/);
+    if (match) imgSrc = match[1];
+  }
+
+  // Categories
+  const cats = post._embedded?.['wp:term']?.[0] || [];
+  const catName = cats[0]?.name || '';
+  const catSlug = cats[0]?.slug || '';
+
+  // Title + description
+  const title = stripHtml(post.title.rendered);
+  const desc  = stripHtml(post.excerpt?.rendered || '').replace(/\[…\]/g,'…').trim();
+
+  // Date
+  const date = new Date(post.date).toLocaleDateString('nl-NL', {month:'long', year:'numeric'});
+
+  // Badge detection (from title)
+  const titleLower = title.toLowerCase();
+  let badge = '';
+  if (titleLower.includes('verkocht')) badge = '<div class="tile-badge sold">Verkocht</div>';
+  else if (titleLower.includes('gereserveerd')) badge = '<div class="tile-badge res">Gereserveerd</div>';
+
+  // Inspiratie = no text
+  const isInspo = catSlug === 'inspiratie';
+  if (isInspo) tile.classList.add('inspo');
+
+  tile.innerHTML = `
+    ${badge}
+    ${imgSrc ? `<img src="${imgSrc}" alt="${escHtml(imgAlt)}" loading="lazy">` : `<div style="height:140px;background:var(--sand-lt)"></div>`}
+    <div class="tile-body">
+      <div class="tile-cat">${escHtml(catName)}</div>
+      <div class="tile-title">${escHtml(title)}</div>
+      <div class="tile-date">${date}</div>
+    </div>`;
+
+  // Store data for lightbox
+  tile.dataset.img   = imgSrc;
+  tile.dataset.title = title;
+  tile.dataset.desc  = desc;
+  tile.dataset.cat   = catName;
+  tile.dataset.url   = post.link;
+
+  tile.addEventListener('click', () => openLb(tile));
+  return tile;
+}
+
+// ─── LOAD MORE ────────────────────────────────────────────────────────
+function loadMore() {
+  if (currentPage >= totalPages) return;
+  currentPage++;
+  document.getElementById('loadMoreBtn').disabled = true;
+  fetchPosts(false);
+}
+
+// ─── LIGHTBOX ─────────────────────────────────────────────────────────
+function openLb(tile) {
+  document.getElementById('lbImg').src   = tile.dataset.img || '';
+  document.getElementById('lbImg').alt   = tile.dataset.title || '';
+  document.getElementById('lbTitle').textContent = tile.dataset.title || '';
+  document.getElementById('lbDesc').textContent  = tile.dataset.desc  || '';
+  document.getElementById('lbCat').textContent   = tile.dataset.cat   || '';
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeLb() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow = '';
+}
+document.getElementById('lightbox').addEventListener('click', function(e) {
+  if (e.target === this) closeLb();
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeLb(); closeDrawer(); }
+});
+
+// ─── UI STATES ────────────────────────────────────────────────────────
+function showEmpty(msg) {
+  document.getElementById('tileGrid').innerHTML = '';
+  document.getElementById('pageCount').textContent = '';
+  document.getElementById('stateMsg').innerHTML = `
+    <div class="state-msg">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-4.35-4.35M11 19A8 8 0 1 0 11 3a8 8 0 0 0 0 16z"/></svg>
+      <h3>Niets gevonden</h3><p>${msg}</p>
+    </div>`;
+}
+
+function showError(msg) {
+  document.getElementById('tileGrid').innerHTML = '';
+  document.getElementById('pageCount').textContent = '';
+  document.getElementById('stateMsg').innerHTML = `
+    <div class="state-msg">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
+      <h3>Oops</h3><p>${msg}</p>
+      <button class="retry-btn" onclick="fetchPosts(true)">Opnieuw proberen</button>
+    </div>`;
+}
+
+// ─── HELPERS ──────────────────────────────────────────────────────────
+function stripHtml(html) {
+  const d = document.createElement('div');
+  d.innerHTML = html;
+  return d.textContent || d.innerText || '';
+}
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function setBA(btn) {
+  document.querySelectorAll('.bnav-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// ─── BOOT ─────────────────────────────────────────────────────────────
+fetchPosts(true);
+</script>
+</body>
+</html>

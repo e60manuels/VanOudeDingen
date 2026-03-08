@@ -1,0 +1,15 @@
+node_modules/
+.firebase/
+*.key
+*.keystore
+.env
+firebase-debug.log
+.idea/
+*.iml
+build/
+.gradle/
+local.properties
+.DS_Store
+/captures
+.externalNativeBuild
+.cxx

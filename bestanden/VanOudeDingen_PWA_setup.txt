@@ -1,0 +1,139 @@
+I have a PWA (Progressive Web App) as a ZIP file located at:
+/bestanden/vanoudedingen-live-pwa.zip
+
+My Android Studio project is called VanOudeDingen and is configured 
+as a TWA (Trusted Web Activity).
+
+Please perform ALL of the following steps in order:
+
+## STEP 1 — Unzip the PWA files
+Unzip /bestanden/vanoudedingen-live-pwa.zip into /bestanden/pwa/
+Expected contents after unzipping:
+- index.html
+- manifest.json
+- sw.js
+- icons/icon-192.png
+- icons/icon-512.png
+
+## STEP 2 — Initialize Firebase Hosting
+- Initialize firebase.json and .firebaserc in the project root
+- Use /bestanden/pwa as the public folder
+- Configure firebase.json with proper cache headers:
+  - index.html: no-cache (always fresh)
+  - sw.js: no-cache (service worker must always be fresh)
+  - icons/ and static assets: cache 1 year
+- Add a rewrites rule so all routes serve index.html
+
+## STEP 3 — Add assetlinks.json for TWA domain verification
+Create the file /bestanden/pwa/.well-known/assetlinks.json
+as a placeholder with comments explaining what SHA-256 
+fingerprint needs to be filled in after signing the Android app.
+Also update firebase.json to serve the .well-known/ folder correctly
+with content-type application/json.
+
+## STEP 4 — Initialize Git repository
+- Run git init in the project root
+- Create a .gitignore that excludes:
+  node_modules/, .firebase/, *.key, *.keystore, 
+  .env, firebase-debug.log, .idea/, *.iml, 
+  build/, .gradle/, local.properties
+- Create an initial commit with message "Initial PWA setup"
+
+## STEP 5 — GitHub Actions CI/CD pipeline
+Create .github/workflows/deploy.yml that:
+- Triggers on every push to the main branch
+- Uses Node.js 20
+- Installs firebase-tools
+- Deploys to Firebase Hosting using secret FIREBASE_TOKEN
+- Also creates a preview deployment on pull requests
+  with a comment showing the preview URL
+
+## STEP 6 — Update AndroidManifest.xml for TWA
+In the Android project, update AndroidManifest.xml:
+- Set the TWA launch URL to https://[FIREBASE_URL].web.app
+  (use a placeholder — I will fill in the real URL after deploy)
+- Set theme color #2C1A0E
+- Set navigation bar color #2C1A0E
+- Configure the correct intent filter for the domain
+
+## STEP 7 — Create README.md
+Create a README.md in the project root explaining:
+- Project structure (PWA files, Android TWA, Firebase, GitHub)
+- How the deployment pipeline works
+- Manual deploy command: firebase deploy
+- How to generate a Firebase CI token: firebase login:ci
+- How to add FIREBASE_TOKEN to GitHub Secrets
+- What to fill in for assetlinks.json after app signing
+- The complete workflow diagram:
+  Gemini edits PWA → git push → GitHub Actions → Firebase live → TWA updated
+
+## STEP 8 — Verify and summarize
+After completing all steps:
+- List all created/modified files with their paths
+- Confirm the folder structure is correct
+- Show the exact commands I need to run next:
+  1. firebase login
+  2. firebase use --add (to link Firebase project)
+  3. firebase deploy (first manual deploy)
+  4. The git remote add origin command for GitHub
+  5. Where to add FIREBASE_TOKEN in GitHub Settings
+
+## STEP 9 — Create a deploy Skill with semantic versioning
+
+Create a deployment skill script at /scripts/deploy.sh that:
+
+### Version management
+- Read the current version from a VERSION file in the project root
+  (create it with initial value 1.0.0 if it does not exist)
+- Accept an optional argument: patch, minor, or major
+  - patch = 1.0.0 → 1.0.1 (bug fixes, content updates)
+  - minor = 1.0.0 → 1.1.0 (new features)
+  - major = 1.0.0 → 2.0.0 (breaking changes)
+  - default (no argument) = bump patch automatically
+
+### Service worker cache busting
+- Before deploying, automatically update the CACHE version 
+  in /bestanden/pwa/sw.js from:
+    const CACHE = 'vod-v1';
+  to the new version, for example:
+    const CACHE = 'vod-v1.0.1';
+  This forces all users to get fresh content after an update.
+
+### manifest.json version
+- Also update the version field in manifest.json if present
+
+### Git tagging
+- Stage all changed files: git add .
+- Commit with message: "Release v[new-version]"
+- Create a git tag: git tag v[new-version]
+- Push branch and tags: git push && git push --tags
+
+### Firebase deploy
+- Run firebase deploy --message "v[new-version]"
+
+### Rollback capability
+- Add a rollback function: deploy.sh rollback
+  that runs: firebase hosting:rollback
+  and reverts the VERSION file and git tag
+
+### Changelog
+- Auto-append an entry to CHANGELOG.md with:
+  - Version number
+  - Date and time
+  - Deploy type (patch/minor/major)
+  - Last git commit message as description
+
+### Usage instructions
+The script should be runnable as:
+  ./scripts/deploy.sh          → auto patch bump + deploy
+  ./scripts/deploy.sh minor    → minor version bump + deploy
+  ./scripts/deploy.sh major    → major version bump + deploy
+  ./scripts/deploy.sh rollback → revert to previous Firebase version
+
+Make the script executable with chmod +x scripts/deploy.sh
+
+Also update the GitHub Actions deploy.yml from STEP 5 to:
+- Read the VERSION file and use it as the deployment message
+- Tag the GitHub release automatically on push to main
+- Show the version number in the Firebase Hosting deployment 
+  history for easy identification
