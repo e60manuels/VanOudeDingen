@@ -1,6 +1,7 @@
 {
   "name": "Van Oude Dingen",
   "short_name": "Oude Dingen",
+  "version": "1.0.0",
   "description": "Vintage meubels en woonaccessoires – authentiek, eerlijk geprijsd, ophalen in Amsterdam.",
   "start_url": "./index.html",
   "display": "standalone",
