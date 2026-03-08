@@ -603,14 +603,15 @@ async function openLb(tile) {
   lb.scrollTo(0,0);
   document.body.style.overflow = 'hidden';
 
-  // Parallel calls
+  // Parallel calls (Fix 1)
   const p1 = fetch(`${WP_BASE}/posts/${lbPostId}?_fields=content`);
   const p2 = fetch(`${WP_BASE}/media?parent=${lbPostId}&_fields=id,source_url,media_details,alt_text&per_page=20`);
 
   try {
     const [r1, r2] = await Promise.all([p1, p2]);
-    const postData = await r1.json();
-    const mediaItems = await r2.json();
+    if (!r1.ok || !r2.ok) throw new Error('API Error');
+    
+    const [postData, mediaItems] = await Promise.all([r1.json(), r2.json()]);
 
     if (lbPostId !== tile.dataset.id) return; // Guard against rapid clicks
 
@@ -638,7 +639,12 @@ async function openLb(tile) {
       });
       if (tile.dataset.imgLarge) mainImg.src = tile.dataset.imgLarge;
     }
-  } catch(e) {}
+  } catch(e) {
+    if (lbPostId === tile.dataset.id) {
+      document.getElementById('lbSkel').classList.remove('show');
+      document.getElementById('lbDesc').innerHTML = '<p style="color:var(--rust)">Kon details niet laden. Controleer je verbinding.</p>';
+    }
+  }
 }
 
 function closeLb() {

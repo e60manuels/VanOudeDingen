@@ -1,0 +1,90 @@
+In the PWA project at /bestanden/pwa/ there are two issues to fix:
+
+## FIX 1 — Parallel fetching in lightbox
+
+In index.html, find the lightbox click handler where the post 
+content and attachments are fetched sequentially.
+
+Replace the sequential await calls with Promise.all so both 
+API calls run simultaneously:
+
+The pattern to find (approximately):
+  const post = await fetch(postUrl);
+  const media = await fetch(mediaUrl);
+
+Must be replaced with:
+  const [postResponse, mediaResponse] = await Promise.all([
+    fetch(postUrl),
+    fetch(mediaUrl)
+  ]);
+
+Make sure:
+- Both fetch calls start at exactly the same time
+- Error handling covers both calls — if either fails, show 
+  a graceful error in the lightbox without crashing
+- The lightbox skeleton remains visible until Promise.all resolves
+- No other lightbox logic changes
+
+## FIX 2 — Images not loading on smartphone Chrome reload
+
+In sw.js, fix the caching strategy for images from 
+vanoudedingen.nl/wp-content/uploads/
+
+### The problem
+On mobile Chrome, reloading the PWA shows tile text but no images.
+This is caused by the service worker serving cached or invalid 
+responses for cross-origin images from vanoudedingen.nl
+
+### The fix — Three part solution
+
+Part A — Network-first for wp-content images
+Change the caching strategy for all requests matching 
+vanoudedingen.nl/wp-content/ to strict network-first:
+
+  if (url.hostname === 'vanoudedingen.nl' && 
+      url.pathname.startsWith('/wp-content/')) {
+    
+    // Always try network first
+    // Only use cache as fallback when truly offline
+    // Set cache duration to 24 hours maximum
+    // If network fails AND no cache: return a simple 
+    //   transparent 1x1 pixel response so the tile 
+    //   still renders without a broken image icon
+  }
+
+Part B — Fix cache key for cross-origin images
+When caching images from vanoudedingen.nl, store them with 
+credentials: 'omit' to avoid CORS cache conflicts:
+
+  new Request(event.request.url, { 
+    credentials: 'omit',
+    mode: 'cors'
+  })
+
+This prevents mobile Chrome from treating the same image URL 
+as a different cache entry based on credentials.
+
+Part C — Separate cache bucket for images
+Store wp-content images in a dedicated cache bucket called 
+'vod-images-v[current version]' separate from the main 
+'vod-v[current version]' cache bucket.
+This prevents image cache conflicts with the app shell cache.
+Set a maximum of 200 entries in the image cache — when the 
+limit is reached, remove the oldest entry (LRU eviction).
+
+### Cache strategy overview after fix:
+- index.html, manifest.json → cache-first (app shell)
+- sw.js → network-only (never cache the service worker itself)
+- vanoudedingen.nl/wp-json/ (API) → network-first, 
+  1 hour cache fallback
+- vanoudedingen.nl/wp-content/ (images) → network-first, 
+  24 hour cache fallback, credentials omit, separate bucket
+- Everything else → cache-first
+
+## After both fixes confirm:
+- The two fetch calls in the lightbox now start simultaneously
+- Images load correctly after reload on mobile Chrome
+- The service worker cache buckets are correctly separated
+- Existing offline functionality still works
+- No other functionality is broken (search, categories, 
+  drawer, install banner)
