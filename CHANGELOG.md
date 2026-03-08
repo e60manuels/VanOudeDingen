@@ -12,3 +12,7 @@ Description: Implement Smart Masonry and update header branding with Special Eli
 Type: patch
 Description: Implement Lightbox parallel fetching and fix mobile Chrome image loading
 
+## v1.0.4 (2026-03-08 20:50:15)
+Type: patch
+Description: Fix image loading regression by adding crossorigin attributes and fixing SW response object
+
