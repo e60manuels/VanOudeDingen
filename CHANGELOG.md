@@ -16,3 +16,7 @@ Description: Implement Lightbox parallel fetching and fix mobile Chrome image lo
 Type: patch
 Description: Fix image loading regression by adding crossorigin attributes and fixing SW response object
 
+## v1.0.5 (2026-03-08 21:00:25)
+Type: patch
+Description: Implement Network-First Opaque strategy for robust image loading and caching
+
