@@ -1,0 +1,106 @@
+The PWA fetches content from the WordPress REST API at https://vanoudedingen.nl/wp-json/wp/v2
+
+Please make the following changes to index.html and sw.js:
+
+## CHANGE 1 — Remove "Nieuwste Items" page title
+- Remove ONLY the page header element that shows "Nieuwste Items" 
+  and the item count (1162 items) above the tile grid
+- The title and category label on each individual tile remain untouched
+- When a category IS selected, show that category name as a page 
+  header above the grid (e.g. "Lampen")
+- When no category is selected (default view), show no page header at all
+
+## CHANGE 2 — Optimized initial loading strategy
+Change the loading strategy to:
+
+### Initial load (first 24 items)
+- On app open: fetch ONLY the first 24 posts immediately
+- Use this lean API call without _embed to keep it fast:
+  /wp-json/wp/v2/posts?per_page=24&page=1&_fields=id,title,date,slug,categories,featured_media
+- Immediately after receiving post IDs, fetch thumbnails in a 
+  second call using the media IDs:
+  /wp-json/wp/v2/media?include=[comma separated media IDs]&_fields=id,source_url,media_details
+- From media_details use the "medium" size if available, 
+  fallback to "thumbnail", fallback to source_url
+- Render tiles as soon as each thumbnail is available (do not wait 
+  for all 24)
+
+### Background loading (items 25 onwards)
+- After the first 24 tiles are rendered and visible to the user,
+  start loading the next 24 items silently in the background
+- Continue loading subsequent pages in the background until all 
+  items are loaded
+- Add each batch of 24 to the tile grid silently as they arrive
+- No loading spinner or "load more" button needed — it happens 
+  automatically and invisibly
+- Use a small delay of 800ms between background fetches to avoid 
+  hammering the WordPress server
+
+### Category filtering
+- When a user selects a category, apply the same two-step strategy:
+  first 24 with lean call, then background load the rest
+- Pass the category ID filter to both calls
+
+## CHANGE 3 — Lightbox with full post details and image gallery
+Change the tile click behavior completely:
+
+### On tile click
+- Show the lightbox immediately with:
+  - The thumbnail already loaded (already visible in tile) as 
+    main image — no delay for the user
+  - Title and category visible immediately
+  - A loading skeleton where the gallery and description will appear
+
+### Fetch full post details on click
+Make TWO parallel API calls when a tile is clicked:
+
+Call 1 — Full post content:
+  /wp-json/wp/v2/posts/[post_id]?_fields=id,title,content,excerpt,slug
+
+Call 2 — All attached images (gallery):
+  /wp-json/wp/v2/media?parent=[post_id]&_fields=id,source_url,alt_text,media_details&per_page=20
+
+### Lightbox layout after data arrives
+- Large main image at the top (first gallery image or featured image)
+- Horizontal scrollable thumbnail strip below the main image
+  - clicking a thumbnail swaps the main image
+  - active thumbnail is highlighted
+- Post title (styled with Lora font)
+- Full post description (from content.rendered, strip HTML tags 
+  but preserve paragraph breaks)
+- "Mail mij over dit item" button: 
+  mailto:marlou@vanoudedingen.nl?subject=Interesse in: [post title]
+- "Bekijk op site" link opening the original WordPress post URL 
+  in a new tab
+- Close button top right
+- Swipe left/right on mobile to navigate between gallery images
+
+### Loading states in lightbox
+- Skeleton placeholder for description while Call 1 loads
+- Skeleton placeholders for thumbnail strip while Call 2 loads
+- If Call 2 returns 0 attachments: show only the featured image, 
+  hide the thumbnail strip
+
+## CHANGE 4 — Update service worker caching strategy
+- API calls to vanoudedingen.nl/wp-json: network-first, 
+  cache response for 1 hour as fallback
+- Media/images from vanoudedingen.nl/wp-content: 
+  cache-first, cache for 7 days
+- On tile click (attachment fetch): network-only, no cache 
+  (always fresh details)
+- App shell (index.html, manifest.json): cache-first
+
+## CHANGE 5 — Performance details
+- Add loading="lazy" to all tile images
+- Add fetchpriority="high" to the first 4 tile images only
+- Tile images should use the WordPress "medium" size 
+  (300x300 approx) not the full size
+- In the lightbox main image use "large" size if available, 
+  fallback to full source_url
+
+## After all changes, confirm:
+- The exact lines changed in index.html
+- The exact lines changed in sw.js  
+- That no other functionality was broken (search, category 
+  filter, drawer menu, install banner, offline toast)
+- Remind me to run ./scripts/deploy.sh after reviewing the changes

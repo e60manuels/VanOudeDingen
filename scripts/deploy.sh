@@ -59,6 +59,10 @@ if [ -f "$MANIFEST_FILE" ]; then
     sed -i "s/\"version\": \".*\"/\"version\": \"$NEW_VERSION\"/" "$MANIFEST_FILE"
 fi
 
+# 5b. INDEX VERSION
+# Update: <span id="appVersion">v...</span>
+sed -i "s/<span id=\"appVersion\">v.*<\/span>/<span id=\"appVersion\">v$NEW_VERSION<\/span>/" "bestanden/pwa/index.html"
+
 # 6. CHANGELOG
 DATE=$(date +"%Y-%m-%d %H:%M:%S")
 LAST_MSG=$(git log -1 --pretty=%B)

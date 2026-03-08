@@ -63,6 +63,7 @@ header { position:sticky; top:0; z-index:200; background:var(--brown); height:va
 .drawer-info { padding:20px; }
 .drawer-info p { font-size:13px; color:var(--text-soft); line-height:1.6; margin-bottom:12px; }
 .drawer-info a { font-size:13px; color:var(--rust); text-decoration:none; font-weight:500; }
+.drawer-footer { padding:20px; border-top:1px solid var(--sand-lt); margin-top:10px; opacity:.5; font-size:11px; color:var(--text-soft); }
 
 /* CAT BAR */
 .cat-bar { background:var(--surface); border-bottom:1px solid var(--sand); overflow-x:auto; scrollbar-width:none; -webkit-overflow-scrolling:touch; position:sticky; top:var(--header-h); z-index:100; }
@@ -74,10 +75,10 @@ header { position:sticky; top:0; z-index:200; background:var(--brown); height:va
 .cat-pill .n { font-size:10px; background:var(--sand-lt); color:var(--text-soft); padding:1px 5px; border-radius:10px; }
 .cat-pill.active .n { background:var(--rust); color:white; }
 
-/* PAGE TITLE */
-.page-bar { padding:14px 16px 10px; display:flex; align-items:baseline; gap:10px; }
+/* PAGE TITLE (CHANGE 1) */
+.page-bar { padding:14px 16px 10px; display:none; align-items:baseline; gap:10px; }
+.page-bar.show { display:flex; }
 .page-title { font-family:'Lora',serif; font-size:20px; font-weight:600; color:var(--brown); }
-.page-count { font-size:12px; color:var(--text-soft); }
 
 /* TILE GRID */
 .tile-grid { columns:2; column-gap:10px; padding:0 10px 90px; }
@@ -96,7 +97,7 @@ header { position:sticky; top:0; z-index:200; background:var(--brown); height:va
 .tile-cat { font-size:9px; font-weight:500; letter-spacing:.15em; text-transform:uppercase; color:var(--rust); margin-bottom:3px; }
 .tile-title { font-family:'Lora',serif; font-size:13px; font-weight:500; color:var(--brown); line-height:1.35; }
 .tile-date { font-size:10px; color:var(--text-soft); margin-top:4px; opacity:.7; }
-.tile-badge { position:absolute; top:8px; left:8px; background:var(--rust); color:white; font-size:9px; font-weight:500; letter-spacing:.08em; text-transform:uppercase; padding:3px 7px; border-radius:4px; pointer-events:none; }
+.tile-badge { position:absolute; top:8px; left:8px; background:var(--rust); color:white; font-size:9px; font-weight:500; letter-spacing:.08em; text-transform:uppercase; padding:3px 7px; border-radius:4px; pointer-events:none; z-index:2; }
 .tile-badge.sold { background:rgba(44,26,14,.75); }
 .tile-badge.res  { background:rgba(90,120,85,.85); }
 .tile.inspo .tile-body { display:none; }
@@ -109,12 +110,6 @@ header { position:sticky; top:0; z-index:200; background:var(--brown); height:va
 .skeleton-line { height:10px; background:linear-gradient(90deg,var(--sand-lt) 25%,var(--sand) 50%,var(--sand-lt) 75%); background-size:200% 100%; animation:shimmer 1.4s infinite; border-radius:4px; margin-bottom:6px; }
 .skeleton-line.short { width:60%; }
 
-/* LOAD MORE */
-.load-more-wrap { text-align:center; padding:16px 0 24px; }
-.load-more-btn { background:var(--brown); color:var(--surface); border:none; padding:12px 32px; border-radius:4px; font-family:'Jost',sans-serif; font-size:13px; font-weight:500; cursor:pointer; transition:.2s; }
-.load-more-btn:hover { background:var(--rust); }
-.load-more-btn:disabled { opacity:.4; cursor:not-allowed; }
-
 /* EMPTY + ERROR */
 .state-msg { text-align:center; padding:60px 20px; color:var(--text-soft); }
 .state-msg svg { width:48px; height:48px; opacity:.2; margin-bottom:16px; }
@@ -122,17 +117,37 @@ header { position:sticky; top:0; z-index:200; background:var(--brown); height:va
 .state-msg p { font-size:14px; }
 .retry-btn { margin-top:16px; display:inline-block; background:var(--rust); color:white; border:none; padding:10px 24px; border-radius:4px; font-family:'Jost',sans-serif; font-size:13px; cursor:pointer; }
 
-/* LIGHTBOX */
-.lightbox { position:fixed; inset:0; z-index:500; background:rgba(20,10,5,.92); display:none; flex-direction:column; align-items:center; justify-content:center; padding:16px; padding-top:calc(16px + var(--safe-top)); padding-bottom:calc(16px + var(--safe-bot)); overflow-y:auto; }
+/* LIGHTBOX (CHANGE 3) */
+.lightbox { position:fixed; inset:0; z-index:500; background:rgba(20,10,5,.96); display:none; flex-direction:column; padding-top:calc(10px + var(--safe-top)); overflow-y:auto; overflow-x:hidden; }
 .lightbox.open { display:flex; }
-.lb-close { position:fixed; top:calc(16px + var(--safe-top)); right:16px; background:rgba(255,255,255,.1); border:none; color:white; width:36px; height:36px; border-radius:50%; font-size:20px; cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:10; }
-.lb-img { max-width:100%; max-height:65vh; object-fit:contain; border-radius:4px; display:block; }
-.lb-info { margin-top:16px; text-align:center; max-width:480px; }
-.lb-cat { font-size:10px; font-weight:500; letter-spacing:.2em; text-transform:uppercase; color:var(--gold); margin-bottom:6px; }
-.lb-title { font-family:'Lora',serif; font-size:20px; font-weight:600; color:white; margin-bottom:8px; line-height:1.3; }
-.lb-desc { font-size:14px; color:rgba(255,255,255,.6); line-height:1.6; margin-bottom:16px; }
-.lb-cta { display:inline-block; background:var(--rust); color:white; padding:11px 28px; border-radius:4px; text-decoration:none; font-size:13px; font-weight:500; }
+.lb-close { position:fixed; top:calc(16px + var(--safe-top)); right:16px; background:rgba(255,255,255,.15); border:none; color:white; width:40px; height:40px; border-radius:50%; font-size:24px; cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:20; backdrop-filter:blur(4px); }
+.lb-content { display:flex; flex-direction:column; align-items:center; width:100%; max-width:1000px; margin:0 auto; padding:0 16px 60px; }
+
+/* Main Image */
+.lb-main-wrap { width:100%; aspect-ratio:1; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; border-radius:8px; background:rgba(0,0,0,.3); margin-bottom:12px; }
+.lb-img { max-width:100%; max-height:100%; object-fit:contain; border-radius:4px; }
+
+/* Gallery Strip */
+.lb-gallery { width:100%; overflow-x:auto; display:flex; gap:8px; padding-bottom:12px; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
+.lb-gallery::-webkit-scrollbar { display:none; }
+.lb-thumb { width:70px; height:70px; flex-shrink:0; border-radius:4px; overflow:hidden; border:2px solid transparent; opacity:.6; transition:.2s; cursor:pointer; }
+.lb-thumb img { width:100%; height:100%; object-fit:cover; }
+.lb-thumb.active { border-color:var(--gold); opacity:1; }
+
+.lb-info { width:100%; max-width:600px; margin-top:20px; }
+.lb-cat { font-size:10px; font-weight:500; letter-spacing:.2em; text-transform:uppercase; color:var(--gold); margin-bottom:10px; }
+.lb-title { font-family:'Lora',serif; font-size:24px; font-weight:600; color:white; margin-bottom:16px; line-height:1.25; }
+.lb-desc { font-size:15px; color:rgba(255,255,255,.75); line-height:1.7; margin-bottom:24px; white-space:pre-wrap; }
+.lb-actions { display:flex; flex-direction:column; gap:12px; }
+.lb-cta { display:inline-block; background:var(--rust); color:white; padding:14px 28px; border-radius:4px; text-decoration:none; font-size:14px; font-weight:600; text-align:center; transition:.2s; }
 .lb-cta:hover { background:#8E3F22; }
+.lb-link { font-size:13px; color:var(--gold); text-decoration:none; text-align:center; opacity:.8; padding:8px; }
+
+/* Lightbox Skeleton */
+.lb-skeleton-desc { display:none; }
+.lb-skeleton-desc .line { height:12px; background:rgba(255,255,255,.1); border-radius:4px; margin-bottom:10px; }
+.lb-skeleton-desc.show { display:block; animation:pulse 1.5s infinite; }
+@keyframes pulse { 0%,100%{opacity:.5} 50%{opacity:1} }
 
 /* BOTTOM NAV */
 .bottom-nav { position:fixed; bottom:0; left:0; right:0; z-index:150; background:var(--surface); border-top:1px solid var(--sand); display:flex; padding-bottom:var(--safe-bot); box-shadow:0 -4px 20px rgba(44,26,14,.08); }
@@ -198,6 +213,9 @@ header { position:sticky; top:0; z-index:200; background:var(--brown); height:va
     <p>Hallo! Ik ben Marlou. Al meer dan tien jaar zoek ik naar authentieke vintage stukken vol karakter. Ophalen in Amsterdam.</p>
     <a href="mailto:marlou@vanoudedingen.nl">marlou@vanoudedingen.nl →</a>
   </div>
+  <div class="drawer-footer">
+    Versie <span id="appVersion">v1.0.0</span>
+  </div>
 </div>
 
 <!-- CATEGORY BAR -->
@@ -217,27 +235,34 @@ header { position:sticky; top:0; z-index:200; background:var(--brown); height:va
 </nav>
 
 <!-- PAGE TITLE -->
-<div class="page-bar">
-  <h1 class="page-title" id="pageTitle">Nieuwste items</h1>
-  <span class="page-count" id="pageCount"></span>
+<div class="page-bar" id="pageBar">
+  <h1 class="page-title" id="pageTitle"></h1>
 </div>
 
 <!-- TILE GRID -->
 <div class="tile-grid" id="tileGrid"></div>
 <div id="stateMsg"></div>
-<div class="load-more-wrap" id="loadMoreWrap" style="display:none">
-  <button class="load-more-btn" id="loadMoreBtn" onclick="loadMore()">Meer laden</button>
-</div>
 
-<!-- LIGHTBOX -->
+<!-- LIGHTBOX (CHANGE 3) -->
 <div class="lightbox" id="lightbox">
   <button class="lb-close" onclick="closeLb()">✕</button>
-  <img class="lb-img" id="lbImg" src="" alt="">
-  <div class="lb-info">
-    <div class="lb-cat" id="lbCat"></div>
-    <div class="lb-title" id="lbTitle"></div>
-    <div class="lb-desc" id="lbDesc"></div>
-    <a href="mailto:marlou@vanoudedingen.nl" class="lb-cta">Interesse? Mail mij →</a>
+  <div class="lb-content">
+    <div class="lb-main-wrap" id="lbMainWrap">
+      <img class="lb-img" id="lbImg" src="" alt="">
+    </div>
+    <div class="lb-gallery" id="lbGallery"></div>
+    <div class="lb-info">
+      <div class="lb-cat" id="lbCat"></div>
+      <div class="lb-title" id="lbTitle"></div>
+      <div class="lb-skeleton-desc" id="lbSkel">
+        <div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div>
+      </div>
+      <div class="lb-desc" id="lbDesc"></div>
+      <div class="lb-actions">
+        <a href="" class="lb-cta" id="lbMail">Mail mij over dit item →</a>
+        <a href="" class="lb-link" id="lbSite" target="_blank">Bekijk op site</a>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -270,36 +295,22 @@ header { position:sticky; top:0; z-index:200; background:var(--brown); height:va
 <script>
 // ─── CONFIG ───────────────────────────────────────────────────────────
 const WP_BASE = 'https://vanoudedingen.nl/wp-json/wp/v2';
-const PER_PAGE = 24;
+const BATCH_SIZE = 24;
 
 // ─── STATE ────────────────────────────────────────────────────────────
-let currentSlug = '';   // category slug, '' = all
+let currentSlug = '';   
 let currentPage = 1;
 let totalPages  = 1;
 let isLoading   = false;
 let searchTimer = null;
-let categoryMap = {};   // slug → id
+let categoryMap = {};   
+let renderedIds = new Set();
+let lbPostId    = null;
 
 // ─── SERVICE WORKER ───────────────────────────────────────────────────
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('./sw.js').catch(() => {});
 }
-
-// ─── PWA INSTALL ──────────────────────────────────────────────────────
-let deferredPrompt = null;
-window.addEventListener('beforeinstallprompt', e => {
-  e.preventDefault(); deferredPrompt = e;
-  document.getElementById('installBanner').classList.add('show');
-});
-document.getElementById('installBtn').addEventListener('click', async () => {
-  if (!deferredPrompt) return;
-  deferredPrompt.prompt();
-  await deferredPrompt.userChoice;
-  deferredPrompt = null;
-  document.getElementById('installBanner').classList.remove('show');
-});
-document.getElementById('dismissBanner').addEventListener('click', () =>
-  document.getElementById('installBanner').classList.remove('show'));
 
 // ─── OFFLINE ──────────────────────────────────────────────────────────
 window.addEventListener('offline', () => showToast('📵 Geen internetverbinding'));
@@ -330,26 +341,30 @@ function closeDrawer() {
 function setCat(slug, btn) {
   currentSlug = slug;
   currentPage = 1;
+  renderedIds.clear();
 
-  // Update cat bar
-  document.querySelectorAll('.cat-pill').forEach(b => b.classList.remove('active'));
-  document.querySelectorAll('.drawer-a').forEach(b => b.classList.remove('active'));
-  if (btn) {
-    if (btn.classList.contains('cat-pill')) btn.classList.add('active');
-    if (btn.classList.contains('drawer-a')) btn.classList.add('active');
-  }
+  document.querySelectorAll('.cat-pill, .drawer-a, .bnav-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
 
   const titles = {
-    '':'Nieuwste items','kasten':'Kasten','lampen':'Lampen',
-    'accessoires':'Accessoires','tafels':'Tafels','keramiek':'Keramiek',
-    'banken-en-fauteuils':'Banken & fauteuils','baby-kind':'Baby & kind',
-    'stoelen':'Stoelen','inspiratie':'Inspiratie','verkocht-sold':'Verkocht'
+    'kasten':'Kasten','lampen':'Lampen','accessoires':'Accessoires','tafels':'Tafels',
+    'keramiek':'Keramiek','banken-en-fauteuils':'Banken & fauteuils',
+    'baby-kind':'Baby & kind','stoelen':'Stoelen','inspiratie':'Inspiratie',
+    'verkocht-sold':'Verkocht'
   };
-  document.getElementById('pageTitle').textContent = titles[slug] ?? slug;
-  document.getElementById('searchInput').value = '';
+  
+  const bar = document.getElementById('pageBar');
+  const title = document.getElementById('pageTitle');
+  if (slug && titles[slug]) {
+    bar.classList.add('show');
+    title.textContent = titles[slug];
+  } else {
+    bar.classList.remove('show');
+  }
 
+  document.getElementById('searchInput').value = '';
   closeDrawer();
-  fetchPosts(true);
+  fetchInitial();
 }
 
 // ─── SEARCH ───────────────────────────────────────────────────────────
@@ -357,217 +372,205 @@ function onSearch() {
   clearTimeout(searchTimer);
   searchTimer = setTimeout(() => {
     currentPage = 1;
-    fetchPosts(true);
+    renderedIds.clear();
+    fetchInitial();
   }, 400);
 }
 
-// ─── FETCH POSTS ──────────────────────────────────────────────────────
-async function fetchPosts(reset = false) {
+// ─── FETCH INITIAL (CHANGE 2) ─────────────────────────────────────────
+async function fetchInitial() {
   if (isLoading) return;
   isLoading = true;
 
-  const grid   = document.getElementById('tileGrid');
-  const btn    = document.getElementById('loadMoreBtn');
-  const wrap   = document.getElementById('loadMoreWrap');
-  const search = document.getElementById('searchInput').value.trim();
+  const grid = document.getElementById('tileGrid');
+  grid.innerHTML = '';
+  document.getElementById('stateMsg').innerHTML = '';
 
-  if (reset) {
-    grid.innerHTML = '';
-    document.getElementById('stateMsg').innerHTML = '';
-    wrap.style.display = 'none';
-  }
-
-  // Show skeletons
-  const skels = 8;
-  const heights = [160,200,140,220,180,150,210,170];
-  for (let i = 0; i < skels; i++) {
+  // Skeletons
+  for (let i = 0; i < 8; i++) {
     const s = document.createElement('div');
     s.className = 'skeleton'; s.dataset.skel = '1';
-    s.innerHTML = `<div class="skeleton-img" style="height:${heights[i%8]}px"></div>
-      <div class="skeleton-body">
-        <div class="skeleton-line short"></div>
-        <div class="skeleton-line"></div>
-        <div class="skeleton-line short"></div>
-      </div>`;
+    s.innerHTML = `<div class="skeleton-img" style="height:${[180,220,150,200][i%4]}px"></div><div class="skeleton-body"><div class="skeleton-line short"></div><div class="skeleton-line"></div></div>`;
     grid.appendChild(s);
   }
 
   try {
-    // Build API URL
-    let url = `${WP_BASE}/posts?per_page=${PER_PAGE}&page=${currentPage}&_embed=1`;
-
-    if (search) {
-      url += `&search=${encodeURIComponent(search)}`;
-    } else if (currentSlug) {
-      // Get category id from slug if we don't have it cached
-      if (!categoryMap[currentSlug]) {
-        const catResp = await fetch(`${WP_BASE}/categories?slug=${currentSlug}`);
-        const cats = await catResp.json();
-        if (cats.length) categoryMap[currentSlug] = cats[0].id;
-      }
-      if (categoryMap[currentSlug]) {
-        url += `&categories=${categoryMap[currentSlug]}`;
-      }
-    }
-
-    const resp = await fetch(url);
-    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-
-    totalPages = parseInt(resp.headers.get('X-WP-TotalPages') || '1');
-    const total = parseInt(resp.headers.get('X-WP-Total') || '0');
-    const posts = await resp.json();
-
-    // Remove skeletons
+    const posts = await getPostsBatch(1);
     grid.querySelectorAll('[data-skel]').forEach(s => s.remove());
 
-    if (posts.length === 0 && reset) {
-      showEmpty(search ? `Geen resultaten voor "${search}"` : 'Geen items gevonden in deze categorie.');
+    if (!posts.length) {
+      showEmpty('Geen items gevonden.');
       isLoading = false;
       return;
     }
 
-    document.getElementById('pageCount').textContent = total > 0 ? `${total} items` : '';
+    renderBatch(posts);
+    isLoading = false;
 
-    posts.forEach((post, i) => {
-      const tile = buildTile(post, i);
-      grid.appendChild(tile);
-    });
-
-    // Load more button
-    wrap.style.display = currentPage < totalPages ? 'block' : 'none';
-    if (btn) btn.disabled = false;
-
+    // Start background loading if there's more
+    if (totalPages > 1) {
+      backgroundLoad(2);
+    }
   } catch (err) {
     grid.querySelectorAll('[data-skel]').forEach(s => s.remove());
-    console.error(err);
-
-    if (!navigator.onLine) {
-      showError('Geen internetverbinding. Controleer je verbinding en probeer opnieuw.');
-    } else {
-      showError('Kon items niet laden. Mogelijk blokkeert de site externe toegang (CORS). Probeer het later opnieuw.');
-    }
+    showError('Fout bij laden. Probeer het opnieuw.');
+    isLoading = false;
   }
-
-  isLoading = false;
 }
 
-// ─── BUILD TILE FROM WP POST ──────────────────────────────────────────
+// ─── LEAN API CALLS ───────────────────────────────────────────────────
+async function getPostsBatch(page) {
+  let url = `${WP_BASE}/posts?per_page=${BATCH_SIZE}&page=${page}&_fields=id,title,date,slug,categories,featured_media,link`;
+  
+  const search = document.getElementById('searchInput').value.trim();
+  if (search) {
+    url += `&search=${encodeURIComponent(search)}`;
+  } else if (currentSlug) {
+    if (!categoryMap[currentSlug]) {
+      const catResp = await fetch(`${WP_BASE}/categories?slug=${currentSlug}`);
+      const cats = await catResp.json();
+      if (cats.length) categoryMap[currentSlug] = cats[0].id;
+    }
+    if (categoryMap[currentSlug]) url += `&categories=${categoryMap[currentSlug]}`;
+  }
+
+  const resp = await fetch(url);
+  totalPages = parseInt(resp.headers.get('X-WP-TotalPages') || '1');
+  return await resp.json();
+}
+
+function renderBatch(posts) {
+  const grid = document.getElementById('tileGrid');
+  const mediaIds = posts.map(p => p.featured_media).filter(id => id > 0);
+  
+  posts.forEach((post, i) => {
+    if (renderedIds.has(post.id)) return;
+    renderedIds.add(post.id);
+    const tile = buildTile(post, i);
+    grid.appendChild(tile);
+    
+    // CHANGE 2: Fetch media for this batch
+    if (post.featured_media) {
+      fetchMedia(post.featured_media, tile);
+    }
+  });
+}
+
+async function fetchMedia(mediaId, tile) {
+  try {
+    const resp = await fetch(`${WP_BASE}/media/${mediaId}?_fields=id,media_details,source_url,alt_text`);
+    const media = await resp.json();
+    const sizes = media.media_details?.sizes;
+    const src = sizes?.medium?.source_url || sizes?.thumbnail?.source_url || media.source_url;
+    
+    const imgWrap = tile.querySelector('.img-placeholder');
+    if (imgWrap && src) {
+      imgWrap.outerHTML = `<img src="${src}" alt="${escHtml(media.alt_text || '')}" loading="lazy" ${renderedIds.size <= 4 ? 'fetchpriority="high"' : ''}>`;
+      tile.dataset.img = src;
+      // High res fallback for lightbox
+      tile.dataset.imgLarge = sizes?.large?.source_url || media.source_url;
+    }
+  } catch(e) {}
+}
+
+async function backgroundLoad(page) {
+  if (page > totalPages) return;
+  await new Promise(r => setTimeout(r, 800)); // Delay per requirements
+  const posts = await getPostsBatch(page);
+  renderBatch(posts);
+  backgroundLoad(page + 1);
+}
+
+// ─── BUILD TILE ───────────────────────────────────────────────────────
 function buildTile(post, index) {
   const tile = document.createElement('div');
   tile.className = 'tile';
-  tile.style.animationDelay = Math.min(index * 0.04, 0.5) + 's';
+  tile.style.animationDelay = (index * 0.03) + 's';
 
-  // Image: prefer featured media, fallback to first image in content
-  let imgSrc = '';
-  let imgAlt = '';
-  try {
-    const media = post._embedded?.['wp:featuredmedia']?.[0];
-    if (media) {
-      // Try medium_large first, fallback to full
-      imgSrc = media.media_details?.sizes?.medium_large?.source_url
-            || media.media_details?.sizes?.medium?.source_url
-            || media.source_url;
-      imgAlt = media.alt_text || stripHtml(post.title.rendered);
-    }
-  } catch(e) {}
-
-  // If no featured image, try extracting first img from content
-  if (!imgSrc) {
-    const match = post.content?.rendered?.match(/<img[^>]+src=["']([^"']+)["']/);
-    if (match) imgSrc = match[1];
-  }
-
-  // Categories
-  const cats = post._embedded?.['wp:term']?.[0] || [];
-  const catName = cats[0]?.name || '';
-  const catSlug = cats[0]?.slug || '';
-
-  // Title + description
   const title = stripHtml(post.title.rendered);
-  const desc  = stripHtml(post.excerpt?.rendered || '').replace(/\[…\]/g,'…').trim();
-
-  // Date
   const date = new Date(post.date).toLocaleDateString('nl-NL', {month:'long', year:'numeric'});
-
-  // Badge detection (from title)
-  const titleLower = title.toLowerCase();
+  const isSold = title.toLowerCase().includes('verkocht');
+  const isRes  = title.toLowerCase().includes('gereserveerd');
+  
   let badge = '';
-  if (titleLower.includes('verkocht')) badge = '<div class="tile-badge sold">Verkocht</div>';
-  else if (titleLower.includes('gereserveerd')) badge = '<div class="tile-badge res">Gereserveerd</div>';
-
-  // Inspiratie = no text
-  const isInspo = catSlug === 'inspiratie';
-  if (isInspo) tile.classList.add('inspo');
+  if (isSold) badge = '<div class="tile-badge sold">Verkocht</div>';
+  else if (isRes) badge = '<div class="tile-badge res">Gereserveerd</div>';
 
   tile.innerHTML = `
     ${badge}
-    ${imgSrc ? `<img src="${imgSrc}" alt="${escHtml(imgAlt)}" loading="lazy">` : `<div style="height:140px;background:var(--sand-lt)"></div>`}
+    <div class="img-placeholder" style="aspect-ratio:1;background:var(--sand-lt)"></div>
     <div class="tile-body">
-      <div class="tile-cat">${escHtml(catName)}</div>
       <div class="tile-title">${escHtml(title)}</div>
       <div class="tile-date">${date}</div>
     </div>`;
 
-  // Store data for lightbox
-  tile.dataset.img   = imgSrc;
+  tile.dataset.id = post.id;
   tile.dataset.title = title;
-  tile.dataset.desc  = desc;
-  tile.dataset.cat   = catName;
-  tile.dataset.url   = post.link;
-
+  tile.dataset.url = post.link;
   tile.addEventListener('click', () => openLb(tile));
   return tile;
 }
 
-// ─── LOAD MORE ────────────────────────────────────────────────────────
-function loadMore() {
-  if (currentPage >= totalPages) return;
-  currentPage++;
-  document.getElementById('loadMoreBtn').disabled = true;
-  fetchPosts(false);
+// ─── LIGHTBOX (CHANGE 3) ──────────────────────────────────────────────
+async function openLb(tile) {
+  lbPostId = tile.dataset.id;
+  const lb = document.getElementById('lightbox');
+  const mainImg = document.getElementById('lbImg');
+  
+  // Reset + Show immediate data
+  mainImg.src = tile.dataset.img || '';
+  document.getElementById('lbTitle').textContent = tile.dataset.title;
+  document.getElementById('lbDesc').textContent = '';
+  document.getElementById('lbGallery').innerHTML = '';
+  document.getElementById('lbSkel').classList.add('show');
+  document.getElementById('lbMail').href = `mailto:marlou@vanoudedingen.nl?subject=Interesse in: ${encodeURIComponent(tile.dataset.title)}`;
+  document.getElementById('lbSite').href = tile.dataset.url;
+
+  lb.classList.add('open');
+  lb.scrollTo(0,0);
+  document.body.style.overflow = 'hidden';
+
+  // Parallel calls
+  const p1 = fetch(`${WP_BASE}/posts/${lbPostId}?_fields=content`);
+  const p2 = fetch(`${WP_BASE}/media?parent=${lbPostId}&_fields=id,source_url,media_details,alt_text&per_page=20`);
+
+  try {
+    const [r1, r2] = await Promise.all([p1, p2]);
+    const postData = await r1.json();
+    const mediaItems = await r2.json();
+
+    if (lbPostId !== tile.dataset.id) return; // Guard against rapid clicks
+
+    // Update Content
+    document.getElementById('lbSkel').classList.remove('show');
+    document.getElementById('lbDesc').textContent = stripHtml(postData.content.rendered).trim();
+
+    // Update Gallery
+    if (mediaItems.length > 0) {
+      const gallery = document.getElementById('lbGallery');
+      mediaItems.forEach((m, idx) => {
+        const thumb = document.createElement('div');
+        thumb.className = `lb-thumb ${idx === 0 ? 'active' : ''}`;
+        const tSrc = m.media_details?.sizes?.thumbnail?.source_url || m.source_url;
+        const lSrc = m.media_details?.sizes?.large?.source_url || m.source_url;
+        
+        thumb.innerHTML = `<img src="${tSrc}" alt="">`;
+        thumb.onclick = () => {
+          document.querySelectorAll('.lb-thumb').forEach(t => t.classList.remove('active'));
+          thumb.classList.add('active');
+          mainImg.src = lSrc;
+        };
+        gallery.appendChild(thumb);
+        if (idx === 0 && !tile.dataset.imgLarge) mainImg.src = lSrc;
+      });
+      if (tile.dataset.imgLarge) mainImg.src = tile.dataset.imgLarge;
+    }
+  } catch(e) {}
 }
 
-// ─── LIGHTBOX ─────────────────────────────────────────────────────────
-function openLb(tile) {
-  document.getElementById('lbImg').src   = tile.dataset.img || '';
-  document.getElementById('lbImg').alt   = tile.dataset.title || '';
-  document.getElementById('lbTitle').textContent = tile.dataset.title || '';
-  document.getElementById('lbDesc').textContent  = tile.dataset.desc  || '';
-  document.getElementById('lbCat').textContent   = tile.dataset.cat   || '';
-  document.getElementById('lightbox').classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
 function closeLb() {
   document.getElementById('lightbox').classList.remove('open');
   document.body.style.overflow = '';
-}
-document.getElementById('lightbox').addEventListener('click', function(e) {
-  if (e.target === this) closeLb();
-});
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') { closeLb(); closeDrawer(); }
-});
-
-// ─── UI STATES ────────────────────────────────────────────────────────
-function showEmpty(msg) {
-  document.getElementById('tileGrid').innerHTML = '';
-  document.getElementById('pageCount').textContent = '';
-  document.getElementById('stateMsg').innerHTML = `
-    <div class="state-msg">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-4.35-4.35M11 19A8 8 0 1 0 11 3a8 8 0 0 0 0 16z"/></svg>
-      <h3>Niets gevonden</h3><p>${msg}</p>
-    </div>`;
-}
-
-function showError(msg) {
-  document.getElementById('tileGrid').innerHTML = '';
-  document.getElementById('pageCount').textContent = '';
-  document.getElementById('stateMsg').innerHTML = `
-    <div class="state-msg">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
-      <h3>Oops</h3><p>${msg}</p>
-      <button class="retry-btn" onclick="fetchPosts(true)">Opnieuw proberen</button>
-    </div>`;
 }
 
 // ─── HELPERS ──────────────────────────────────────────────────────────
@@ -577,15 +580,35 @@ function stripHtml(html) {
   return d.textContent || d.innerText || '';
 }
 function escHtml(s) {
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  return s ? s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') : '';
 }
 function setBA(btn) {
   document.querySelectorAll('.bnav-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
 }
 
+// ─── UI STATES ────────────────────────────────────────────────────────
+function showEmpty(msg) {
+  document.getElementById('stateMsg').innerHTML = `<div class="state-msg"><h3>Niets gevonden</h3><p>${msg}</p></div>`;
+}
+function showError(msg) {
+  document.getElementById('stateMsg').innerHTML = `<div class="state-msg"><h3>Oops</h3><p>${msg}</p><button class="retry-btn" onclick="fetchInitial()">Opnieuw</button></div>`;
+}
+
 // ─── BOOT ─────────────────────────────────────────────────────────────
-fetchPosts(true);
+fetchInitial();
+
+// Swipe detection for Lightbox Gallery
+let touchStartX = 0;
+document.getElementById('lbMainWrap').addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX);
+document.getElementById('lbMainWrap').addEventListener('touchend', e => {
+  const diff = touchStartX - e.changedTouches[0].screenX;
+  const thumbs = [...document.querySelectorAll('.lb-thumb')];
+  if (thumbs.length < 2) return;
+  const activeIdx = thumbs.findIndex(t => t.classList.contains('active'));
+  if (diff > 50 && activeIdx < thumbs.length - 1) thumbs[activeIdx+1].click();
+  if (diff < -50 && activeIdx > 0) thumbs[activeIdx-1].click();
+});
 </script>
 </body>
 </html>
