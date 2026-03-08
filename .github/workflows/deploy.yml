@@ -1,0 +1,55 @@
+name: Deploy to Firebase Hosting
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install -g firebase-tools
+
+      - name: Deploy to Hosting
+        id: deploy
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+        run: |
+          if [ "${{ github.event_name }}" == "push" ]; then
+            firebase deploy --only hosting --token "$FIREBASE_TOKEN" --non-interactive -m "Push to main"
+          else
+            # Preview deploy for pull requests
+            RESULT=$(firebase hosting:channel:deploy "pr-${{ github.event.number }}" --token "$FIREBASE_TOKEN" --non-interactive --json)
+            # Use jq to extract the URL from the JSON result
+            URL=$(echo $RESULT | jq -r '.result.hosting.url // empty')
+            if [ -z "$URL" ]; then
+              echo "Error: Could not extract preview URL"
+              exit 1
+            fi
+            echo "preview_url=$URL" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Comment Preview URL
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const previewUrl = '${{ steps.deploy.outputs.preview_url }}';
+            if (previewUrl) {
+              github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: `🚀 Preview deployment available at: ${previewUrl}`
+              });
+            }

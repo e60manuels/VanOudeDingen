@@ -10,6 +10,39 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.VanOudeDingen" />
+        android:theme="@style/Theme.VanOudeDingen">
+
+        <activity
+            android:name="com.google.android.browserhelper.trusted.LauncherActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:host="vanoudedingen-pwa-placeholder.web.app"
+                    android:scheme="https" />
+            </intent-filter>
+        </activity>
+
+        <meta-data
+            android:name="android.support.customtabs.trusted.DEFAULT_URL"
+            android:value="https://vanoudedingen-pwa-placeholder.web.app" />
+        <meta-data
+            android:name="android.support.customtabs.trusted.STATUS_BAR_COLOR"
+            android:value="#2C1A0E" />
+        <meta-data
+            android:name="android.support.customtabs.trusted.NAVIGATION_BAR_COLOR"
+            android:value="#2C1A0E" />
+        <meta-data
+            android:name="android.support.customtabs.trusted.SPLASH_IMAGE_DRAWABLE"
+            android:value="@drawable/ic_launcher_background" />
+
+    </application>
 
 </manifest>
