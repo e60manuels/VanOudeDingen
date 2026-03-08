@@ -1,4 +1,4 @@
-const VERSION = '1.0.3';
+const VERSION = '1.0.4';
 const CACHE_NAME = `vod-v${VERSION}`;
 const IMAGE_CACHE = `vod-images-v${VERSION}`;
 const API_CACHE = `vod-api-cache`;
@@ -37,12 +37,14 @@ self.addEventListener('fetch', e => {
     return;
   }
 
-  // FIX 2: Images (network-first, 24h cache)
+  // IMAGES - Use standard fetch (no forced CORS) to support opaque responses
   if (isWP && url.pathname.includes('/wp-content/')) {
     e.respondWith(
-      fetch(new Request(e.request.url, { credentials: 'omit', mode: 'cors' }))
+      fetch(e.request)
         .then(res => {
+          // Allow opaque (type: 'opaque') or successful responses
           if (!res.ok && res.type !== 'opaque') return res;
+          
           const clone = res.clone();
           caches.open(IMAGE_CACHE).then(cache => {
             const headers = new Headers(clone.headers);
