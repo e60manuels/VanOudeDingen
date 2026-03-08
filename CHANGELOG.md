@@ -20,3 +20,7 @@ Description: Fix image loading regression by adding crossorigin attributes and f
 Type: patch
 Description: Implement Network-First Opaque strategy for robust image loading and caching
 
+## v1.0.6 (2026-03-08 21:16:59)
+Type: patch
+Description: Bypass CORS blocks by using embedded media and native image loading
+
