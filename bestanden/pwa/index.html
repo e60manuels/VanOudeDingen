@@ -533,6 +533,7 @@ async function fetchMedia(mediaId, tile) {
       img.src = src;
       img.alt = media.alt_text || '';
       img.loading = 'lazy';
+      img.crossOrigin = "anonymous";
       if (renderedIds.size <= 4) img.setAttribute('fetchpriority', 'high');
       
       img.onload = () => {
@@ -589,6 +590,7 @@ async function openLb(tile) {
   lbPostId = tile.dataset.id;
   const lb = document.getElementById('lightbox');
   const mainImg = document.getElementById('lbImg');
+  mainImg.crossOrigin = "anonymous";
   
   // Reset + Show immediate data
   mainImg.src = tile.dataset.img || '';
@@ -628,7 +630,7 @@ async function openLb(tile) {
         const tSrc = m.media_details?.sizes?.thumbnail?.source_url || m.source_url;
         const lSrc = m.media_details?.sizes?.large?.source_url || m.source_url;
         
-        thumb.innerHTML = `<img src="${tSrc}" alt="">`;
+        thumb.innerHTML = `<img src="${tSrc}" alt="" crossorigin="anonymous">`;
         thumb.onclick = () => {
           document.querySelectorAll('.lb-thumb').forEach(t => t.classList.remove('active'));
           thumb.classList.add('active');
