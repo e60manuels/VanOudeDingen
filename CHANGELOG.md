@@ -8,3 +8,7 @@ Description: Implement PWA Change 1 and add version display in Menu
 Type: patch
 Description: Implement Smart Masonry and update header branding with Special Elite font
 
+## v1.0.3 (2026-03-08 20:44:07)
+Type: patch
+Description: Implement Lightbox parallel fetching and fix mobile Chrome image loading
+
