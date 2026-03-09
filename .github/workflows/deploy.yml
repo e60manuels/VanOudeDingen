@@ -1,8 +1,6 @@
 name: Deploy to Firebase Hosting
 on:
   push:
-    branches:
-      - main
     tags:
       - 'v*'
   pull_request:
@@ -38,11 +36,8 @@ jobs:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
         run: |
           if [[ "${{ github.ref }}" == refs/tags/v* ]]; then
-            # Tagged release
+            # Tagged release (Production)
             firebase deploy --only hosting --token "$FIREBASE_TOKEN" --non-interactive -m "Release ${{ steps.version.outputs.version }}"
-          elif [ "${{ github.event_name }}" == "push" ]; then
-            # Push to main (untagged)
-            firebase deploy --only hosting --token "$FIREBASE_TOKEN" --non-interactive -m "Push to main (v${{ steps.version.outputs.version }})"
           else
             # Preview deploy for pull requests
             RESULT=$(firebase hosting:channel:deploy "pr-${{ github.event.number }}" --token "$FIREBASE_TOKEN" --non-interactive --json)

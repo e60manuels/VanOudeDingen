@@ -77,7 +77,4 @@ git commit -m "Release v$NEW_VERSION"
 git tag "v$NEW_VERSION"
 git push && git push --tags
 
-# 8. FIREBASE DEPLOY
-firebase deploy --message "v$NEW_VERSION"
-
-echo "Deployment of v$NEW_VERSION complete!"
+echo "Release v$NEW_VERSION created and tagged. GitHub Actions will now handle the deployment!"
