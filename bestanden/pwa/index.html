@@ -196,7 +196,7 @@ header { position:sticky; top:0; z-index:200; background:var(--brown); height:va
     <p>Hallo! Ik ben Marlou. Al meer dan tien jaar zoek ik naar authentieke vintage stukken vol karakter.</p>
     <a href="mailto:marlou@vanoudedingen.nl">marlou@vanoudedingen.nl →</a>
   </div>
-  <div class="drawer-footer">Versie <span id="appVersion">v1.0.7</span></div>
+  <div class="drawer-footer">Versie <span id="appVersion">v1.0.8</span></div>
 </div>
 
 <nav class="cat-bar">
@@ -351,6 +351,8 @@ function initObservers() {
 async function fetchInitial() {
   if (isLoading) return;
   
+  if (currentPage === 1) Masonry.reset();
+
   const cached = Cache.get(currentSlug);
   if (cached.length > 0 && currentPage === 1) {
     renderBatch(cached, true);
@@ -369,8 +371,7 @@ async function fetchInitial() {
       // Silent Refresh Logic
       if (latestCached && posts[0].date > latestCached) {
         needsRefresh = true;
-        // Als we bovenaan staan, direct verversen
-        if (window.scrollY < 100) performRefresh();
+        if (window.scrollY < 100) performRefresh(posts);
       } else if (!latestCached || cached.length === 0) {
         performRefresh(posts);
       }
@@ -411,10 +412,16 @@ async function getPostsBatch(page) {
   if (search) url += `&search=${encodeURIComponent(search)}`;
   else if (currentSlug) {
     if (!categoryMap[currentSlug]) {
-      const cats = await (await fetch(`${WP_BASE}/categories?slug=${currentSlug}`)).json();
-      if (cats.length) categoryMap[currentSlug] = cats[0].id;
+      try {
+        const cats = await (await fetch(`${WP_BASE}/categories?slug=${currentSlug}`)).json();
+        if (cats && cats.length) categoryMap[currentSlug] = cats[0].id;
+      } catch(e) { console.error("Cat fetch error", e); }
     }
     if (categoryMap[currentSlug]) url += `&categories=${categoryMap[currentSlug]}`;
+    else {
+      // Fallback: als cat ID nog niet bekend is, wacht even of doe een retry
+      isLoading = false; return []; 
+    }
   }
   const resp = await fetch(url);
   totalPages = parseInt(resp.headers.get('X-WP-TotalPages') || '1');
@@ -428,7 +435,8 @@ function renderBatch(posts, isCache = false) {
     renderedIds.add(post.id);
     const tile = buildTile(post, i, isCache);
     Masonry.addItem(tile);
-    imageObserver.observe(tile.querySelector('.tile-img-wrap'));
+    const imgWrap = tile.querySelector('.tile-img-wrap');
+    if (imgWrap) imageObserver.observe(imgWrap);
   });
 }
 
@@ -469,7 +477,7 @@ function buildTile(post, index, isCache) {
 }
 
 function showSkeletons() {
-  Masonry.reset();
+  // We doen hier geen reset, die is al gedaan in fetchInitial
   for (let i = 0; i < 6; i++) {
     const s = document.createElement('div');
     s.className = 'skeleton';
@@ -482,6 +490,9 @@ function showSkeletons() {
 function setCat(slug, btn) {
   if (currentSlug === slug && !btn?.classList.contains('drawer-a')) return;
   currentSlug = slug; currentPage = 1; 
+  
+  // Direct resetten voor onmiddellijke visuele feedback
+  Masonry.reset();
   window.scrollTo(0,0);
   
   document.querySelectorAll('.cat-pill, .drawer-a, .bnav-btn').forEach(b => b.classList.remove('active'));
@@ -496,6 +507,7 @@ function setCat(slug, btn) {
   closeDrawer();
   fetchInitial();
 }
+
 
 function onSearch() {
   clearTimeout(searchTimer);

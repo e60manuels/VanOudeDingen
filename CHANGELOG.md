@@ -27,3 +27,7 @@ Description: Bypass CORS blocks by using embedded media and native image loading
 ## v1.0.7 (2026-03-09)
 Type: patch
 Description: Instant-on cache, lazy loading images, silent updates.
+
+## v1.0.8 (2026-03-09)
+Type: patch
+Description: Fix category filtering by ensuring grid reset on switch.

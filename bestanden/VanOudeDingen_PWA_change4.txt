@@ -1,0 +1,38 @@
+Ik wil een strategie implementeren waarbij de app direct cached tiles toont en daarna een stille background refresh uitvoert zonder de gebruiker te onderbreken. 
+Daarnaast wil ik lazy loading optimaliseren, per categorie een eigen cache gebruiken, en refreshes alleen uitvoeren wanneer er daadwerkelijk nieuwe artikelen zijn gepubliceerd.
+
+Voer de volgende taken uit:
+
+1. Genereer complete HTML, CSS en JavaScript code voor een productgrid-component dat:
+   - bij app-start de 6 meest recente producten uit localStorage toont voor de categorie "all"
+   - voor elke categorie (zoals kasten, lampen, stoelen, tafels, etc.) ook 6 cached items toont zodra de gebruiker een categorie opent
+   - als fallback statische skeleton tiles toont (geen animatie)
+   - op de achtergrond de nieuwste producten ophaalt via de WordPress API
+   - de nieuwe producten opslaat in localStorage per categorie, maar NIET direct toont
+   - alleen een refresh uitvoert wanneer de API een NIEUWERE publicatiedatum teruggeeft dan de cached items
+   - de UI pas ververst op een natuurlijk moment, zoals:
+       • wanneer de gebruiker terugkeert van een detailpagina
+       • wanneer de gebruiker bovenaan de pagina staat
+       • wanneer de gebruiker de app opnieuw opent
+   - de UI-verversing uitvoert met een rustige fade-in overgang zonder layout shifts
+
+2. Implementeer lazy loading met IntersectionObserver:
+   - gebruik een rootMargin van ongeveer "300px 0px" zodat tiles 300px vóór zichtbaarheid worden geladen
+   - laad alleen wat nodig is; stop automatisch wanneer de gebruiker stopt met scrollen
+   - laad niet de volledige catalogus vooruit
+
+3. Gebruik de WordPress API image sizes:
+   - thumbnail → voor blur-up preview
+   - medium of large → voor de uiteindelijke afbeelding
+
+4. Implementeer een blur-up image loader:
+   - toon eerst de thumbnail geblurd
+   - laad de grote afbeelding lazy via IntersectionObserver
+   - vervang de thumbnail door de grote afbeelding met een fade-in
+   - verwijder de skeleton pas wanneer de grote afbeelding volledig geladen is
+
+5. Zorg dat de code:
+   - mobile-first is
+   - geschikt is voor een PWA
+   - geen frameworks gebruikt (pure HTML/CSS/JS)
+   - direct in mijn project te plakken is

@@ -1,0 +1,54 @@
+# Van Oude Dingen - Hybrid PWA & TWA
+
+This project is a hybrid vintage furniture and accessories showcase, combining a Progressive Web App (PWA) with an Android Trusted Web Activity (TWA) wrapper. It pulls content from the `vanoudedingen.nl` WordPress REST API.
+
+## Project Overview
+
+- **Architecture:** 
+    - **PWA:** Located in `/bestanden/pwa/`. Built with HTML5, CSS3, and Vanilla JavaScript.
+    - **Android TWA:** Located in `/app/`. A native Android wrapper using `androidx.browser:browser` and `androidbrowserhelper`.
+    - **Hosting:** Firebase Hosting (`vanoudedingen-bca6c.web.app`).
+    - **CI/CD:** GitHub Actions for automated deployment.
+- **Key Features:**
+    - Custom **Smart Masonry** layout for balanced tile distribution.
+    - **Lean Loading:** Fetches initial 24 items with `_embed`, then silent background loading for performance.
+    - **Advanced Lightbox:** Parallel API fetching, gallery parsing from content, and mobile swipe navigation.
+    - **Offline Support:** Custom Service Worker (`sw.js`) with specific caching for API (1h) and images (24h).
+    - **CORS Bypass:** Utilizes embedded media and native image tags to handle cross-origin WordPress assets.
+
+## Building and Running
+
+### PWA Development
+- Development files are in `bestanden/pwa`.
+- Test locally by serving the folder or via Firebase:
+  ```powershell
+  firebase serve
+  ```
+
+### Android TWA
+- Open the root directory in Android Studio.
+- Build the Release Bundle/APK:
+  ```powershell
+  ./gradlew assembleRelease
+  ```
+- **Signing:** Uses `my-release-key.jks` in the project root (Password: `VanOudeDingen2026`).
+
+### Deployment
+The project uses a custom deployment skill script:
+- **Manual (Git Bash):**
+  ```bash
+  ./scripts/deploy.sh [patch|minor|major|rollback]
+  ```
+- **Automated:** Pushing to the `main` branch or creating a tag (`v*`) triggers GitHub Actions.
+
+## Development Conventions
+
+- **Versioning:** Semantic versioning managed in the `VERSION` file. The `deploy.sh` script automatically increments this and syncs it with `manifest.json` and the PWA menu.
+- **Changelog:** Release notes are automatically appended to `CHANGELOG.md` during deployment.
+- **Branding:** 
+    - **Fonts:** "Special Elite" (Header/Logo), "Lora" (Serif), "Jost" (Sans-serif).
+    - **Header:** "VAN OUDE DINGEN," with the subtitle "de mensen die voorbij gaan...".
+- **Git Strategy:** 
+    - Branch: `main`.
+    - Automated tagging and release creation via GitHub Actions.
+- **CORS/Image Strategy:** Always use `_embed=1` in API calls to avoid extra media fetches. Use standard `<img>` tags without `crossorigin` attributes to support opaque responses from the WordPress server.
