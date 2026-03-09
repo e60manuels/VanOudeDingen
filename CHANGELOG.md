@@ -31,3 +31,7 @@ Description: Instant-on cache, lazy loading images, silent updates.
 ## v1.0.8 (2026-03-09)
 Type: patch
 Description: Fix category filtering by ensuring grid reset on switch.
+
+## v1.0.9 (2026-03-09)
+Type: patch
+Description: Fix category filtering by hardcoding IDs and syncing slugs with WP backend.

@@ -182,7 +182,7 @@ header { position:sticky; top:0; z-index:200; background:var(--brown); height:va
   </div>
   <div class="drawer-sec">Categorieën</div>
   <a class="drawer-a active" onclick="setCat('',this)">Alles</a>
-  <a class="drawer-a" onclick="setCat('kasten',this)">Kasten</a>
+  <a class="drawer-a" onclick="setCat('te-koop-kasten',this)">Kasten</a>
   <a class="drawer-a" onclick="setCat('lampen',this)">Lampen</a>
   <a class="drawer-a" onclick="setCat('accessoires',this)">Accessoires</a>
   <a class="drawer-a" onclick="setCat('tafels',this)">Tafels</a>
@@ -196,13 +196,13 @@ header { position:sticky; top:0; z-index:200; background:var(--brown); height:va
     <p>Hallo! Ik ben Marlou. Al meer dan tien jaar zoek ik naar authentieke vintage stukken vol karakter.</p>
     <a href="mailto:marlou@vanoudedingen.nl">marlou@vanoudedingen.nl →</a>
   </div>
-  <div class="drawer-footer">Versie <span id="appVersion">v1.0.8</span></div>
+  <div class="drawer-footer">Versie <span id="appVersion">v1.0.9</span></div>
 </div>
 
 <nav class="cat-bar">
   <div class="cat-bar-inner" id="catBar">
     <button class="cat-pill active" onclick="setCat('',this)">Alles</button>
-    <button class="cat-pill" onclick="setCat('kasten',this)">Kasten</button>
+    <button class="cat-pill" onclick="setCat('te-koop-kasten',this)">Kasten</button>
     <button class="cat-pill" onclick="setCat('lampen',this)">Lampen</button>
     <button class="cat-pill" onclick="setCat('accessoires',this)">Accessoires</button>
     <button class="cat-pill" onclick="setCat('tafels',this)">Tafels</button>
@@ -261,11 +261,23 @@ let currentPage = 1;
 let totalPages  = 1;
 let isLoading   = false;
 let searchTimer = null;
-let categoryMap = {};
 let renderedIds = new Set();
 let needsRefresh = false;
 let scrollObserver = null;
 let imageObserver = null;
+
+const categoryMap = {
+  'te-koop-kasten': 16,
+  'lampen': 17,
+  'accessoires': 20,
+  'tafels': 15,
+  'keramiek': 18,
+  'banken-en-fauteuils': 14,
+  'baby-kind': 2606,
+  'stoelen': 1,
+  'inspiratie': 22,
+  'verkocht-sold': 1311
+};
 
 // ─── CACHE MANAGEMENT ──────────────────────────────────────────────
 const Cache = {
@@ -410,18 +422,8 @@ async function getPostsBatch(page) {
   let url = `${WP_BASE}/posts?per_page=${BATCH_SIZE}&page=${page}&_embed=1&_fields=id,title,date,slug,categories,featured_media,link,content,_links,_embedded`;
   const search = document.getElementById('searchInput').value.trim();
   if (search) url += `&search=${encodeURIComponent(search)}`;
-  else if (currentSlug) {
-    if (!categoryMap[currentSlug]) {
-      try {
-        const cats = await (await fetch(`${WP_BASE}/categories?slug=${currentSlug}`)).json();
-        if (cats && cats.length) categoryMap[currentSlug] = cats[0].id;
-      } catch(e) { console.error("Cat fetch error", e); }
-    }
-    if (categoryMap[currentSlug]) url += `&categories=${categoryMap[currentSlug]}`;
-    else {
-      // Fallback: als cat ID nog niet bekend is, wacht even of doe een retry
-      isLoading = false; return []; 
-    }
+  else if (currentSlug && categoryMap[currentSlug]) {
+    url += `&categories=${categoryMap[currentSlug]}`;
   }
   const resp = await fetch(url);
   totalPages = parseInt(resp.headers.get('X-WP-TotalPages') || '1');
@@ -491,16 +493,29 @@ function setCat(slug, btn) {
   if (currentSlug === slug && !btn?.classList.contains('drawer-a')) return;
   currentSlug = slug; currentPage = 1; 
   
-  // Direct resetten voor onmiddellijke visuele feedback
   Masonry.reset();
   window.scrollTo(0,0);
   
   document.querySelectorAll('.cat-pill, .drawer-a, .bnav-btn').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
 
-  const titles = {'kasten':'Kasten','lampen':'Lampen','accessoires':'Accessoires','tafels':'Tafels','keramiek':'Keramiek','banken-en-fauteuils':'Banken & fauteuils','baby-kind':'Baby & kind','stoelen':'Stoelen','inspiratie':'Inspiratie','verkocht-sold':'Verkocht'};
+  const titles = {
+    'te-koop-kasten':'Kasten',
+    'lampen':'Lampen',
+    'accessoires':'Accessoires',
+    'tafels':'Tafels',
+    'keramiek':'Keramiek',
+    'banken-en-fauteuils':'Banken & fauteuils',
+    'baby-kind':'Baby & kind',
+    'stoelen':'Stoelen',
+    'inspiratie':'Inspiratie',
+    'verkocht-sold':'Verkocht'
+  };
   const bar = document.getElementById('pageBar');
-  if (slug && titles[slug]) { bar.classList.add('show'); document.getElementById('pageTitle').textContent = titles[slug]; }
+  if (slug && titles[slug]) { 
+    bar.classList.add('show'); 
+    document.getElementById('pageTitle').textContent = titles[slug]; 
+  }
   else bar.classList.remove('show');
 
   document.getElementById('searchInput').value = '';
