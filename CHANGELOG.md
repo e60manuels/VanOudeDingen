@@ -55,3 +55,7 @@ Description: Add console logs to debug lazy loading for 'Alles' category.
 ## v1.1.4 (2026-03-09)
 Type: patch
 Description: Update index.html version, optimize Service Worker for forced updates, and fix lazy load issue.
+
+## v1.1.5 (2026-03-09)
+Type: patch
+Description: Update index.html version, fix loadMoreTrigger positioning for correct lazy loading, and ensure initial observer setup.
