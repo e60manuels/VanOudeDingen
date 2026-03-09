@@ -1,0 +1,72 @@
+In the PWA project at /bestanden/pwa/ there are two files that need 
+specific fixes. Do NOT rewrite or restructure anything — only make 
+the exact changes described below.
+
+## FIX 1 — index.html: API call fix
+
+Find this line in the getPostsBatch function:
+  let url = `${WP_BASE}/posts?per_page=${BATCH_SIZE}&page=${page}&_embed=wp:featuredmedia`
+          + `&_fields=id,title,date,link,featured_media,_links,_embedded`;
+
+Replace it with:
+  let url = `${WP_BASE}/posts?per_page=${BATCH_SIZE}&page=${page}&_embed=1`
+          + `&_fields=id,title,date,link,featured_media,_links,_embedded`;
+
+## FIX 2 — index.html: Lightbox opening image fix
+
+Find these lines in the openLb function:
+  const fullSrc  = tile.querySelector('.full')?.src  || '';
+  const thumbSrc = tile.querySelector('.thumb')?.src || '';
+  document.getElementById('lbImg').src    = fullSrc || thumbSrc;
+
+Replace them with:
+  const fullEl   = tile.querySelector('.full');
+  const thumbEl  = tile.querySelector('.thumb');
+  const fullSrc  = fullEl?.src || fullEl?.dataset.src || '';
+  const thumbSrc = thumbEl?.src || '';
+  document.getElementById('lbImg').src = fullSrc || thumbSrc;
+
+## FIX 3 — sw.js: Image handler CORS fix
+
+Find the entire handleImage function:
+  async function handleImage(request) {
+    const cacheKey = new Request(request.url, {
+      credentials: 'omit',
+      mode: 'cors'
+    });
+    ...
+  }
+
+Replace the entire handleImage function with:
+  async function handleImage(request) {
+    // Use no-cors so WordPress images load as opaque responses.
+    // Opaque = browser renders the image but JS cannot inspect it —
+    // correct for a PWA tile grid where we only need display, not data.
+    const imageRequest = new Request(request.url, {
+      mode: 'no-cors',
+      credentials: 'omit'
+    });
+
+    try {
+      const networkRes = await fetch(imageRequest);
+      if (networkRes.ok || networkRes.type === 'opaque') {
+        const cache = await caches.open(CACHE_IMAGES);
+        await trimCache(cache, 300);
+        cache.put(request.url, networkRes.clone());
+        return networkRes;
+      }
+    } catch (_) {}
+
+    const cached = await caches.match(request.url);
+    if (cached) return cached;
+
+    return new Response(
+      atob('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg=='),
+      { headers: { 'Content-Type': 'image/png' } }
+    );
+  }
+
+## After all fixes:
+- Confirm exactly which lines were changed in each file
+- Do NOT change anything else
+- Run: ./scripts/deploy.sh

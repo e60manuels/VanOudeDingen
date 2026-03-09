@@ -196,7 +196,7 @@ header { position:sticky; top:0; z-index:200; background:var(--brown); height:va
     <p>Hallo! Ik ben Marlou. Al meer dan tien jaar zoek ik naar authentieke vintage stukken vol karakter.</p>
     <a href="/cdn-cgi/l/email-protection#a0cdc1d2cccfd5e0d6c1cecfd5c4c5c4c9cec7c5ce8ececc"><span class="__cf_email__" data-cfemail="107d71627c7f655066717e7f65747574797e77757e3e7e7c">[email&#160;protected]</span> →</a>
   </div>
-  <div class="drawer-footer">Versie <span id="appVersion">v1.1.0</span></div>
+  <div class="drawer-footer">Versie <span id="appVersion">v1.1.2</span></div>
 </div>
 
 <nav class="cat-bar">
@@ -396,7 +396,7 @@ async function loadNextPage() {
 
 async function getPostsBatch(page) {
   // Lean request: no content, no full embed — only what tiles need
-  let url = `${WP_BASE}/posts?per_page=${BATCH_SIZE}&page=${page}&_embed=wp:featuredmedia`
+  let url = `${WP_BASE}/posts?per_page=${BATCH_SIZE}&page=${page}&_embed=1`
           + `&_fields=id,title,date,link,featured_media,_links,_embedded`;
 
   const search = document.getElementById('searchInput').value.trim();
@@ -523,9 +523,11 @@ function onSearch() {
 // ─── LIGHTBOX ──────────────────────────────────────────────────────
 async function openLb(tile, post) {
   // Show lightbox immediately with already-loaded thumbnail
-  const fullSrc  = tile.querySelector('.full')?.src  || '';
-  const thumbSrc = tile.querySelector('.thumb')?.src || '';
-  document.getElementById('lbImg').src    = fullSrc || thumbSrc;
+  const fullEl   = tile.querySelector('.full');
+  const thumbEl  = tile.querySelector('.thumb');
+  const fullSrc  = fullEl?.src || fullEl?.dataset.src || '';
+  const thumbSrc = thumbEl?.src || '';
+  document.getElementById('lbImg').src = fullSrc || thumbSrc;
   document.getElementById('lbTitle').textContent = stripHtml(post.title.rendered);
   document.getElementById('lbDesc').textContent  = 'Laden…';
   document.getElementById('lbGallery').innerHTML = '';

@@ -1,4 +1,4 @@
-const VERSION = '1.1.0';
+const VERSION = '1.1.2';
 const CACHE_SHELL  = `vod-shell-v${VERSION}`;
 const CACHE_IMAGES = `vod-images-v${VERSION}`;
 const CACHE_API    = `vod-api-v${VERSION}`;
@@ -61,25 +61,25 @@ self.addEventListener('fetch', e => {
 
 // ─── IMAGE HANDLER ──────────────────────────────────────────────────
 async function handleImage(request) {
-  // Use a normalised request (credentials omit) to avoid CORS cache conflicts
-  const cacheKey = new Request(request.url, {
-    credentials: 'omit',
-    mode: 'cors'
+  // Use no-cors so WordPress images load as opaque responses.
+  // Opaque = browser renders the image but JS cannot inspect it —
+  // correct for a PWA tile grid where we only need display, not data.
+  const imageRequest = new Request(request.url, {
+    mode: 'no-cors',
+    credentials: 'omit'
   });
 
-  // Try network first
   try {
-    const networkRes = await fetch(cacheKey);
+    const networkRes = await fetch(imageRequest);
     if (networkRes.ok || networkRes.type === 'opaque') {
       const cache = await caches.open(CACHE_IMAGES);
-      await trimCache(cache, 300); // max 300 images
-      cache.put(cacheKey, networkRes.clone());
+      await trimCache(cache, 300);
+      cache.put(request.url, networkRes.clone());
       return networkRes;
     }
-  } catch (_) { /* offline — fall through to cache */ }
+  } catch (_) {}
 
-  // Fallback: cached version
-  const cached = await caches.match(cacheKey);
+  const cached = await caches.match(request.url);
   if (cached) return cached;
 
   // Last resort: transparent 1×1 PNG so tiles don't show broken icon

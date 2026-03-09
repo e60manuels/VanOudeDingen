@@ -43,3 +43,7 @@ Description: Fix race conditions and improve concurrency in category switching.
 ## v1.1.1 (2026-03-09)
 Type: patch
 Description: Deploy manual version of index.html and sw.js with race condition and gallery fixes.
+
+## v1.1.2 (2026-03-09)
+Type: patch
+Description: Fix image loading by using no-cors (opaque) in SW, and fix lightbox opening for lazy-loaded tiles.
