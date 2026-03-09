@@ -1,4 +1,4 @@
-const VERSION = '1.0.9';
+const VERSION = '1.1.0';
 const CACHE_NAME = `vod-v${VERSION}`;
 const IMAGE_CACHE = `vod-images-v${VERSION}`;
 const API_CACHE = `vod-api-cache`;

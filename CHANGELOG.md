@@ -35,3 +35,7 @@ Description: Fix category filtering by ensuring grid reset on switch.
 ## v1.0.9 (2026-03-09)
 Type: patch
 Description: Fix category filtering by hardcoding IDs and syncing slugs with WP backend.
+
+## v1.1.0 (2026-03-09)
+Type: minor
+Description: Fix race conditions and improve concurrency in category switching.

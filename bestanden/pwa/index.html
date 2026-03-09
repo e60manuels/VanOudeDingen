@@ -196,7 +196,7 @@ header { position:sticky; top:0; z-index:200; background:var(--brown); height:va
     <p>Hallo! Ik ben Marlou. Al meer dan tien jaar zoek ik naar authentieke vintage stukken vol karakter.</p>
     <a href="mailto:marlou@vanoudedingen.nl">marlou@vanoudedingen.nl →</a>
   </div>
-  <div class="drawer-footer">Versie <span id="appVersion">v1.0.9</span></div>
+  <div class="drawer-footer">Versie <span id="appVersion">v1.1.0</span></div>
 </div>
 
 <nav class="cat-bar">
@@ -242,7 +242,7 @@ header { position:sticky; top:0; z-index:200; background:var(--brown); height:va
   <button class="bnav-btn" onclick="setCat('lampen',this);setBA(this)">
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg><span>Lampen</span>
   </button>
-  <button class="bnav-btn" onclick="setCat('kasten',this);setBA(this)">
+  <button class="bnav-btn" onclick="setCat('te-koop-kasten',this);setBA(this)">
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2" stroke-width="1.5"/><line x1="3" y1="12" x2="21" y2="12" stroke-width="1.5"/></svg><span>Kasten</span>
   </button>
   <button class="bnav-btn" onclick="toggleDrawer()">
@@ -260,6 +260,7 @@ let currentSlug = '';
 let currentPage = 1;
 let totalPages  = 1;
 let isLoading   = false;
+let currentFetchId = 0; // Request tracker
 let searchTimer = null;
 let renderedIds = new Set();
 let needsRefresh = false;
@@ -335,7 +336,6 @@ const Masonry = {
 
 // ─── OBSERVERS ─────────────────────────────────────────────────────
 function initObservers() {
-  // Lazy Image Loading
   imageObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
@@ -350,7 +350,6 @@ function initObservers() {
     });
   }, { rootMargin: '300px 0px' });
 
-  // Infinite Scroll
   scrollObserver = new IntersectionObserver((entries) => {
     if (entries[0].isIntersecting && !isLoading && currentPage < totalPages) {
       loadNextPage();
@@ -361,47 +360,55 @@ function initObservers() {
 
 // ─── CORE LOGIC ────────────────────────────────────────────────────
 async function fetchInitial() {
-  if (isLoading) return;
+  const fetchId = ++currentFetchId; // Increment ID
   
-  if (currentPage === 1) Masonry.reset();
-
-  const cached = Cache.get(currentSlug);
-  if (cached.length > 0 && currentPage === 1) {
-    renderBatch(cached, true);
-  } else {
-    showSkeletons();
+  if (currentPage === 1) {
+    Masonry.reset();
+    const cached = Cache.get(currentSlug);
+    if (cached.length > 0) {
+      renderBatch(cached, true);
+    } else {
+      showSkeletons();
+    }
   }
 
   isLoading = true;
+  document.getElementById('stateMsg').innerHTML = '';
+
   try {
     const posts = await getPostsBatch(1);
+    if (fetchId !== currentFetchId) return; // Abort if another request started
+
     const latestCached = Cache.getLatestDate(currentSlug);
     
     if (posts.length > 0) {
       Cache.set(currentSlug, posts);
       
-      // Silent Refresh Logic
-      if (latestCached && posts[0].date > latestCached) {
+      // Force refresh if content is new or cache was empty
+      if (!latestCached || posts[0].date > latestCached || Cache.get(currentSlug).length === 0) {
         needsRefresh = true;
-        if (window.scrollY < 100) performRefresh(posts);
-      } else if (!latestCached || cached.length === 0) {
-        performRefresh(posts);
+        if (window.scrollY < 100 || !latestCached) performRefresh(posts, fetchId);
       }
+    } else if (renderedIds.size === 0) {
+      showEmpty('Geen items gevonden.');
     }
     isLoading = false;
   } catch (err) {
+    if (fetchId !== currentFetchId) return;
     isLoading = false;
     if (renderedIds.size === 0) showError('Fout bij laden.');
   }
 }
 
-function performRefresh(posts) {
+function performRefresh(posts, fetchId) {
+  if (fetchId && fetchId !== currentFetchId) return;
+  
   const container = document.getElementById('tileGrid');
   container.style.opacity = '0';
   setTimeout(async () => {
+    if (fetchId && fetchId !== currentFetchId) return;
     Masonry.reset();
-    const data = posts || await getPostsBatch(1);
-    renderBatch(data);
+    renderBatch(posts);
     container.style.opacity = '1';
     needsRefresh = false;
   }, 300);
@@ -409,13 +416,17 @@ function performRefresh(posts) {
 
 async function loadNextPage() {
   if (isLoading || currentPage >= totalPages) return;
+  const fetchId = currentFetchId;
   isLoading = true;
   currentPage++;
   try {
     const posts = await getPostsBatch(currentPage);
+    if (fetchId !== currentFetchId) return;
     renderBatch(posts);
     isLoading = false;
-  } catch (e) { isLoading = false; }
+  } catch (e) { 
+    if (fetchId === currentFetchId) isLoading = false; 
+  }
 }
 
 async function getPostsBatch(page) {
@@ -479,7 +490,6 @@ function buildTile(post, index, isCache) {
 }
 
 function showSkeletons() {
-  // We doen hier geen reset, die is al gedaan in fetchInitial
   for (let i = 0; i < 6; i++) {
     const s = document.createElement('div');
     s.className = 'skeleton';
@@ -523,16 +533,19 @@ function setCat(slug, btn) {
   fetchInitial();
 }
 
-
 function onSearch() {
   clearTimeout(searchTimer);
-  searchTimer = setTimeout(() => { currentPage = 1; Masonry.reset(); fetchInitial(); }, 400);
+  searchTimer = setTimeout(() => { 
+    currentPage = 1; 
+    Masonry.reset(); 
+    fetchInitial(); 
+  }, 400);
 }
 
 // ─── LIGHTBOX ──────────────────────────────────────────────────────
 async function openLb(tile, post) {
   const lb = document.getElementById('lightbox');
-  document.getElementById('lbImg').src = tile.querySelector('.full').src;
+  document.getElementById('lbImg').src = tile.querySelector('.full').src || tile.querySelector('.thumb').src;
   document.getElementById('lbTitle').textContent = stripHtml(post.title.rendered);
   document.getElementById('lbDesc').textContent = 'Laden...';
   document.getElementById('lbGallery').innerHTML = '';
@@ -591,6 +604,8 @@ function closeDrawer() {
 }
 function setBA(btn) { document.querySelectorAll('.bnav-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
 function showToast(m) { const t = document.getElementById('offlineToast'); t.textContent = m; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); }
+function showEmpty(msg) { document.getElementById('stateMsg').innerHTML = `<div class="state-msg"><h3>Niets gevonden</h3><p>${msg}</p></div>`; }
+function showError(msg) { document.getElementById('stateMsg').innerHTML = `<div class="state-msg"><h3>Oops</h3><p>${msg}</p><button class="retry-btn" onclick="fetchInitial()">Opnieuw</button></div>`; }
 
 // ─── BOOT ──────────────────────────────────────────────────────────
 Masonry.init();
@@ -602,7 +617,6 @@ window.addEventListener('online',  () => showToast('✅ Verbinding hersteld'));
 window.onscroll = () => { if (needsRefresh && window.scrollY < 100) performRefresh(); };
 document.addEventListener('visibilitychange', () => { if (!document.hidden && needsRefresh) performRefresh(); });
 
-// Swipe lightbox
 let touchStartX = 0;
 document.getElementById('lbMainWrap').addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX);
 document.getElementById('lbMainWrap').addEventListener('touchend', e => {
