@@ -51,3 +51,7 @@ Description: Fix image loading by using no-cors (opaque) in SW, and fix lightbox
 ## v1.1.3 (2026-03-09)
 Type: patch
 Description: Add console logs to debug lazy loading for 'Alles' category.
+
+## v1.1.4 (2026-03-09)
+Type: patch
+Description: Update index.html version, optimize Service Worker for forced updates, and fix lazy load issue.

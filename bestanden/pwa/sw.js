@@ -1,4 +1,4 @@
-const VERSION = '1.1.2';
+const VERSION = '1.1.4';
 const CACHE_SHELL  = `vod-shell-v${VERSION}`;
 const CACHE_IMAGES = `vod-images-v${VERSION}`;
 const CACHE_API    = `vod-api-v${VERSION}`;
@@ -15,7 +15,8 @@ self.addEventListener('install', e => {
   e.waitUntil(
     caches.open(CACHE_SHELL).then(c => c.addAll(SHELL_FILES))
   );
-  self.skipWaiting();
+  self.skipWaiting(); // Force the waiting service worker to become active
+  self.clients.claim(); // Take control of clients immediately
 });
 
 // ─── ACTIVATE: remove old caches ───────────────────────────────────
