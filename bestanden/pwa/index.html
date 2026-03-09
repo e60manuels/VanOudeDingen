@@ -359,10 +359,14 @@ async function fetchInitial() {
   Masonry.reset();
   document.getElementById('stateMsg').innerHTML = '';
   showSkeletons();
+  console.log('fetchInitial started for slug:', currentSlug, 'fetchId:', fetchId); // Debugging
 
   try {
     const posts = await getPostsBatch(1);
-    if (fetchId !== currentFetchId) return; // Stale request — abort
+    if (fetchId !== currentFetchId) {
+      console.log('fetchInitial aborted (stale request)', fetchId); // Debugging
+      return; // Stale request — abort
+    }
 
     document.querySelectorAll('.skeleton').forEach(s => s.remove());
 
@@ -373,12 +377,17 @@ async function fetchInitial() {
       renderBatch(posts);
     }
   } catch (err) {
-    if (fetchId !== currentFetchId) return;
+    if (fetchId !== currentFetchId) {
+      console.log('fetchInitial error aborted (stale request)', fetchId, err); // Debugging
+      return;
+    }
     document.querySelectorAll('.skeleton').forEach(s => s.remove());
     showError('Kon items niet laden. Controleer je verbinding.');
+    console.error('fetchInitial error:', err); // Debugging
   }
 
   isLoading = false;
+  console.log('fetchInitial finished for slug:', currentSlug, 'isLoading:', isLoading, 'totalPages:', totalPages); // Debugging
 }
 
 async function loadNextPage() {
@@ -409,6 +418,7 @@ async function getPostsBatch(page) {
   const resp = await fetch(url);
   if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
   totalPages = parseInt(resp.headers.get('X-WP-TotalPages') || '1');
+  console.log('getPostsBatch for slug:', currentSlug, 'page:', page, 'received totalPages:', totalPages); // Debugging
   return resp.json();
 }
 
