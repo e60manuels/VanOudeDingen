@@ -72,8 +72,6 @@ header { position:sticky; top:0; z-index:200; background:var(--brown); height:va
 .cat-pill { display:inline-flex; align-items:center; gap:5px; padding:10px 14px; font-size:12px; color:var(--text-soft); border-bottom:2px solid transparent; cursor:pointer; white-space:nowrap; background:none; border-top:none; border-left:none; border-right:none; transition:.2s; }
 .cat-pill:hover { color:var(--rust); }
 .cat-pill.active { color:var(--rust); border-bottom-color:var(--rust); font-weight:500; }
-.cat-pill .n { font-size:10px; background:var(--sand-lt); color:var(--text-soft); padding:1px 5px; border-radius:10px; }
-.cat-pill.active .n { background:var(--rust); color:white; }
 
 /* PAGE TITLE */
 .page-bar { padding:14px 16px 10px; display:none; align-items:baseline; gap:10px; }
@@ -81,40 +79,41 @@ header { position:sticky; top:0; z-index:200; background:var(--brown); height:va
 .page-title { font-family:'Lora',serif; font-size:20px; font-weight:600; color:var(--brown); }
 
 /* TILE GRID (MASONRY) */
-.tile-grid { display: flex; align-items: flex-start; padding:0 10px 90px; gap:10px; }
+.tile-grid { display: flex; align-items: flex-start; padding:0 10px 90px; gap:10px; transition: opacity 0.5s ease-in-out; }
 @media(min-width:768px){.tile-grid{padding:0 14px 90px; gap:14px; }}
 .grid-col { flex: 1; display: flex; flex-direction: column; min-width: 0; }
 
 .tile { width: 100%; margin-bottom:10px; background:var(--surface); border-radius:8px; overflow:hidden; cursor:pointer; position:relative; transition:transform .2s,box-shadow .2s; animation:tileIn .4s ease backwards; }
-@media(min-width:768px){ .tile { margin-bottom:14px; } .grid-col { gap:14px; } }
+@media(min-width:768px){ .tile { margin-bottom:14px; } }
 .tile:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(44,26,14,.14); }
-.tile:active { transform:scale(.98); }
 @keyframes tileIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
-.tile img { width:100%; display:block; transition:transform .4s; }
-.tile:hover img { transform:scale(1.03); }
+
+/* Image Loader */
+.tile-img-wrap { position: relative; width: 100%; overflow: hidden; background: var(--sand-lt); }
+.tile-img-wrap img { width: 100%; display: block; transition: opacity 0.4s ease, transform 0.4s ease; }
+.tile-img-wrap .thumb { filter: blur(10px); transform: scale(1.1); }
+.tile-img-wrap .full { position: absolute; top: 0; left: 0; opacity: 0; }
+.tile-img-wrap.loaded .full { opacity: 1; }
+.tile-img-wrap.loaded .thumb { opacity: 0; }
+.tile:hover .full { transform: scale(1.03); }
+
 .tile-body { padding:8px 10px 10px; }
-.tile-cat { font-size:9px; font-weight:500; letter-spacing:.15em; text-transform:uppercase; color:var(--rust); margin-bottom:3px; }
 .tile-title { font-family:'Lora',serif; font-size:13px; font-weight:500; color:var(--brown); line-height:1.35; }
 .tile-date { font-size:10px; color:var(--text-soft); margin-top:4px; opacity:.7; }
 .tile-badge { position:absolute; top:8px; left:8px; background:var(--rust); color:white; font-size:9px; font-weight:500; letter-spacing:.08em; text-transform:uppercase; padding:3px 7px; border-radius:4px; pointer-events:none; z-index:2; }
 .tile-badge.sold { background:rgba(44,26,14,.75); }
 .tile-badge.res  { background:rgba(90,120,85,.85); }
-.tile.inspo .tile-body { display:none; }
 
-/* SKELETON LOADING */
+/* SKELETON (STATIC) */
 .skeleton { width:100%; background:var(--sand-lt); border-radius:8px; overflow:hidden; margin-bottom:10px; }
-@media(min-width:768px){ .skeleton { margin-bottom:14px; } }
-.skeleton-img { background:linear-gradient(90deg,var(--sand-lt) 25%,var(--sand) 50%,var(--sand-lt) 75%); background-size:200% 100%; animation:shimmer 1.4s infinite; }
-@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+.skeleton-img { height: 180px; background: var(--sand); }
 .skeleton-body { padding:10px; }
-.skeleton-line { height:10px; background:linear-gradient(90deg,var(--sand-lt) 25%,var(--sand) 50%,var(--sand-lt) 75%); background-size:200% 100%; animation:shimmer 1.4s infinite; border-radius:4px; margin-bottom:6px; }
+.skeleton-line { height:10px; background: var(--sand); border-radius:4px; margin-bottom:6px; }
 .skeleton-line.short { width:60%; }
 
 /* EMPTY + ERROR */
 .state-msg { text-align:center; padding:60px 20px; color:var(--text-soft); width: 100%; }
-.state-msg svg { width:48px; height:48px; opacity:.2; margin-bottom:16px; }
 .state-msg h3 { font-family:'Lora',serif; font-size:20px; color:var(--brown); margin-bottom:6px; }
-.state-msg p { font-size:14px; }
 .retry-btn { margin-top:16px; display:inline-block; background:var(--rust); color:white; border:none; padding:10px 24px; border-radius:4px; font-family:'Jost',sans-serif; font-size:13px; cursor:pointer; }
 
 /* LIGHTBOX */
@@ -122,18 +121,13 @@ header { position:sticky; top:0; z-index:200; background:var(--brown); height:va
 .lightbox.open { display:flex; }
 .lb-close { position:fixed; top:calc(16px + var(--safe-top)); right:16px; background:rgba(255,255,255,.15); border:none; color:white; width:40px; height:40px; border-radius:50%; font-size:24px; cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:20; backdrop-filter:blur(4px); }
 .lb-content { display:flex; flex-direction:column; align-items:center; width:100%; max-width:1000px; margin:0 auto; padding:0 16px 60px; }
-
-/* Main Image */
 .lb-main-wrap { width:100%; aspect-ratio:1; display:flex; align-items:center; justify-content:center; position:relative; overflow:hidden; border-radius:8px; background:rgba(0,0,0,.3); margin-bottom:12px; }
 .lb-img { max-width:100%; max-height:100%; object-fit:contain; border-radius:4px; }
-
-/* Gallery Strip */
 .lb-gallery { width:100%; overflow-x:auto; display:flex; gap:8px; padding-bottom:12px; scrollbar-width:none; -webkit-overflow-scrolling:touch; }
 .lb-gallery::-webkit-scrollbar { display:none; }
 .lb-thumb { width:70px; height:70px; flex-shrink:0; border-radius:4px; overflow:hidden; border:2px solid transparent; opacity:.6; transition:.2s; cursor:pointer; }
 .lb-thumb img { width:100%; height:100%; object-fit:cover; }
 .lb-thumb.active { border-color:var(--gold); opacity:1; }
-
 .lb-info { width:100%; max-width:600px; margin-top:20px; }
 .lb-cat { font-size:10px; font-weight:500; letter-spacing:.2em; text-transform:uppercase; color:var(--gold); margin-bottom:10px; }
 .lb-title { font-family:'Lora',serif; font-size:24px; font-weight:600; color:white; margin-bottom:16px; line-height:1.25; }
@@ -143,12 +137,6 @@ header { position:sticky; top:0; z-index:200; background:var(--brown); height:va
 .lb-cta:hover { background:#8E3F22; }
 .lb-link { font-size:13px; color:var(--gold); text-decoration:none; text-align:center; opacity:.8; padding:8px; }
 
-/* Lightbox Skeleton */
-.lb-skeleton-desc { display:none; }
-.lb-skeleton-desc .line { height:12px; background:rgba(255,255,255,.1); border-radius:4px; margin-bottom:10px; }
-.lb-skeleton-desc.show { display:block; animation:pulse 1.5s infinite; }
-@keyframes pulse { 0%,100%{opacity:.5} 50%{opacity:1} }
-
 /* BOTTOM NAV */
 .bottom-nav { position:fixed; bottom:0; left:0; right:0; z-index:150; background:var(--surface); border-top:1px solid var(--sand); display:flex; padding-bottom:var(--safe-bot); box-shadow:0 -4px 20px rgba(44,26,14,.08); }
 @media(min-width:768px){.bottom-nav{display:none}}
@@ -156,22 +144,22 @@ header { position:sticky; top:0; z-index:200; background:var(--brown); height:va
 .bnav-btn.active { color:var(--rust); }
 .bnav-btn svg { width:22px; height:22px; }
 
+/* LOADING TRIGGER */
+#loadMoreTrigger { height: 50px; width: 100%; }
+
 /* OFFLINE TOAST */
 #offlineToast { position:fixed; bottom:calc(70px + var(--safe-bot)); left:50%; transform:translateX(-50%) translateY(20px); background:var(--brown); color:var(--sand); padding:10px 20px; border-radius:20px; font-size:13px; opacity:0; transition:.3s; pointer-events:none; z-index:600; white-space:nowrap; }
 #offlineToast.show { opacity:1; transform:translateX(-50%) translateY(0); }
-@media(min-width:768px){#offlineToast{bottom:calc(20px + var(--safe-bot))}}
 </style>
 </head>
 <body>
 
-<!-- PWA INSTALL BANNER -->
 <div id="installBanner">
   <div><strong>Installeer als app</strong> — gebruik offline</div>
   <button class="install-btn" id="installBtn">Installeren</button>
   <button class="install-x" id="dismissBanner">✕</button>
 </div>
 
-<!-- HEADER -->
 <header>
   <a href="#" class="logo-wrap">
     <span class="logo-name">VAN OUDE DINGEN,</span>
@@ -186,7 +174,6 @@ header { position:sticky; top:0; z-index:200; background:var(--brown); height:va
   </button>
 </header>
 
-<!-- DRAWER OVERLAY + DRAWER -->
 <div class="overlay" id="overlay" onclick="closeDrawer()"></div>
 <div class="drawer" id="drawer">
   <div class="drawer-hd">
@@ -205,20 +192,13 @@ header { position:sticky; top:0; z-index:200; background:var(--brown); height:va
   <a class="drawer-a" onclick="setCat('stoelen',this)">Stoelen</a>
   <a class="drawer-a" onclick="setCat('inspiratie',this)">Inspiratie</a>
   <a class="drawer-a" onclick="setCat('verkocht-sold',this)">Verkocht</a>
-  <div class="drawer-sec">Over</div>
-  <a class="drawer-a" href="https://vanoudedingen.nl/over-mij/" target="_blank">Over mij</a>
-  <a class="drawer-a" href="https://vanoudedingen.nl/info/" target="_blank">Info & ophalen</a>
-  <a class="drawer-a" href="https://vanoudedingen.nl/in-de-media/" target="_blank">In de media</a>
   <div class="drawer-info">
-    <p>Hallo! Ik ben Marlou. Al meer dan tien jaar zoek ik naar authentieke vintage stukken vol karakter. Ophalen in Amsterdam.</p>
+    <p>Hallo! Ik ben Marlou. Al meer dan tien jaar zoek ik naar authentieke vintage stukken vol karakter.</p>
     <a href="mailto:marlou@vanoudedingen.nl">marlou@vanoudedingen.nl →</a>
   </div>
-  <div class="drawer-footer">
-    Versie <span id="appVersion">v1.0.6</span>
-  </div>
+  <div class="drawer-footer">Versie <span id="appVersion">v1.0.7</span></div>
 </div>
 
-<!-- CATEGORY BAR -->
 <nav class="cat-bar">
   <div class="cat-bar-inner" id="catBar">
     <button class="cat-pill active" onclick="setCat('',this)">Alles</button>
@@ -230,33 +210,22 @@ header { position:sticky; top:0; z-index:200; background:var(--brown); height:va
     <button class="cat-pill" onclick="setCat('banken-en-fauteuils',this)">Banken</button>
     <button class="cat-pill" onclick="setCat('baby-kind',this)">Baby & kind</button>
     <button class="cat-pill" onclick="setCat('stoelen',this)">Stoelen</button>
-    <button class="cat-pill" onclick="setCat('inspiratie',this)">Inspiratie</button>
   </div>
 </nav>
 
-<!-- PAGE TITLE -->
-<div class="page-bar" id="pageBar">
-  <h1 class="page-title" id="pageTitle"></h1>
-</div>
-
-<!-- TILE GRID -->
+<div class="page-bar" id="pageBar"><h1 class="page-title" id="pageTitle"></h1></div>
 <div class="tile-grid" id="tileGrid"></div>
+<div id="loadMoreTrigger"></div>
 <div id="stateMsg"></div>
 
-<!-- LIGHTBOX -->
 <div class="lightbox" id="lightbox">
   <button class="lb-close" onclick="closeLb()">✕</button>
   <div class="lb-content">
-    <div class="lb-main-wrap" id="lbMainWrap">
-      <img class="lb-img" id="lbImg" src="" alt="">
-    </div>
+    <div class="lb-main-wrap" id="lbMainWrap"><img class="lb-img" id="lbImg" src="" alt=""></div>
     <div class="lb-gallery" id="lbGallery"></div>
     <div class="lb-info">
       <div class="lb-cat" id="lbCat"></div>
       <div class="lb-title" id="lbTitle"></div>
-      <div class="lb-skeleton-desc" id="lbSkel">
-        <div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div>
-      </div>
       <div class="lb-desc" id="lbDesc"></div>
       <div class="lb-actions">
         <a href="" class="lb-cta" id="lbMail">Mail mij over dit item →</a>
@@ -266,331 +235,294 @@ header { position:sticky; top:0; z-index:200; background:var(--brown); height:va
   </div>
 </div>
 
-<!-- BOTTOM NAV -->
 <nav class="bottom-nav">
   <button class="bnav-btn active" onclick="setCat('',this);setBA(this)">
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-    <span>Alles</span>
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span>Alles</span>
   </button>
   <button class="bnav-btn" onclick="setCat('lampen',this);setBA(this)">
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
-    <span>Lampen</span>
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg><span>Lampen</span>
   </button>
   <button class="bnav-btn" onclick="setCat('kasten',this);setBA(this)">
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2" stroke-width="1.5"/><line x1="3" y1="12" x2="21" y2="12" stroke-width="1.5"/></svg>
-    <span>Kasten</span>
-  </button>
-  <button class="bnav-btn" onclick="setCat('accessoires',this);setBA(this)">
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><circle cx="12" cy="12" r="9" stroke-width="1.5"/><path d="M12 8v4l3 3" stroke-width="1.5" stroke-linecap="round"/></svg>
-    <span>Meer</span>
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2" stroke-width="1.5"/><line x1="3" y1="12" x2="21" y2="12" stroke-width="1.5"/></svg><span>Kasten</span>
   </button>
   <button class="bnav-btn" onclick="toggleDrawer()">
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16"/></svg>
-    <span>Menu</span>
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16"/></svg><span>Menu</span>
   </button>
 </nav>
 
-<div id="offlineToast">📵 Geen internetverbinding</div>
+<div id="offlineToast"></div>
 
 <script>
-// ─── CONFIG ───────────────────────────────────────────────────────────
 const WP_BASE = 'https://vanoudedingen.nl/wp-json/wp/v2';
 const BATCH_SIZE = 24;
 
-// ─── STATE ────────────────────────────────────────────────────────────
-let currentSlug = '';   
+let currentSlug = '';
 let currentPage = 1;
 let totalPages  = 1;
 let isLoading   = false;
 let searchTimer = null;
-let categoryMap = {};   
+let categoryMap = {};
 let renderedIds = new Set();
-let lbPostId    = null;
+let needsRefresh = false;
+let scrollObserver = null;
+let imageObserver = null;
 
-// ─── SERVICE WORKER ───────────────────────────────────────────────────
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js').catch(() => {});
-}
+// ─── CACHE MANAGEMENT ──────────────────────────────────────────────
+const Cache = {
+  get(slug) {
+    const key = `cache_${slug || 'all'}`;
+    try { return JSON.parse(localStorage.getItem(key)) || []; } catch(e) { return []; }
+  },
+  set(slug, posts) {
+    const key = `cache_${slug || 'all'}`;
+    localStorage.setItem(key, JSON.stringify(posts.slice(0, 6)));
+  },
+  getLatestDate(slug) {
+    const posts = this.get(slug);
+    return posts.length ? posts[0].date : null;
+  }
+};
 
-// ─── OFFLINE ──────────────────────────────────────────────────────────
-window.addEventListener('offline', () => showToast('📵 Geen internetverbinding'));
-window.addEventListener('online',  () => showToast('✅ Verbinding hersteld'));
-function showToast(msg) {
-  const t = document.getElementById('offlineToast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
-}
-
-// ─── DRAWER ───────────────────────────────────────────────────────────
-function toggleDrawer() {
-  const open = document.getElementById('drawer').classList.contains('open');
-  document.getElementById('drawer').classList.toggle('open', !open);
-  document.getElementById('overlay').classList.toggle('open', !open);
-  document.getElementById('menuBtn').classList.toggle('open', !open);
-  document.body.style.overflow = open ? '' : 'hidden';
-}
-function closeDrawer() {
-  document.getElementById('drawer').classList.remove('open');
-  document.getElementById('overlay').classList.remove('open');
-  document.getElementById('menuBtn').classList.remove('open');
-  document.body.style.overflow = '';
-}
-
-// ─── MASONRY MANAGER ──────────────────────────────────────────────────
+// ─── MASONRY ───────────────────────────────────────────────────────
 const Masonry = {
-  cols: [],
-  container: null,
-  
+  cols: [], container: null,
   init() {
     this.container = document.getElementById('tileGrid');
     this.setupColumns();
     window.addEventListener('resize', () => this.onResize());
   },
-
   getColCount() {
     const w = window.innerWidth;
-    if (w >= 1280) return 6;
-    if (w >= 1024) return 5;
-    if (w >= 768) return 4;
-    if (w >= 540) return 3;
-    return 2;
+    if (w >= 1280) return 6; if (w >= 1024) return 5;
+    if (w >= 768) return 4; if (w >= 540) return 3; return 2;
   },
-
   setupColumns() {
-    this.container.innerHTML = '';
-    this.cols = [];
+    this.container.innerHTML = ''; this.cols = [];
     const count = this.getColCount();
     for (let i = 0; i < count; i++) {
-      const col = document.createElement('div');
-      col.className = 'grid-col';
-      this.container.appendChild(col);
-      this.cols.push(col);
+      const col = document.createElement('div'); col.className = 'grid-col';
+      this.container.appendChild(col); this.cols.push(col);
     }
   },
-
   addItem(item) {
     let shortest = this.cols[0];
-    let minHeight = shortest.offsetHeight;
-    
     for (let i = 1; i < this.cols.length; i++) {
-      if (this.cols[i].offsetHeight < minHeight) {
-        shortest = this.cols[i];
-        minHeight = shortest.offsetHeight;
-      }
+      if (this.cols[i].offsetHeight < shortest.offsetHeight) shortest = this.cols[i];
     }
     shortest.appendChild(item);
   },
-
-  reset() {
-    this.setupColumns();
-    renderedIds.clear();
-  },
-
+  reset() { this.setupColumns(); renderedIds.clear(); },
   onResize() {
     const newCount = this.getColCount();
     if (newCount !== this.cols.length) {
-      const tiles = Array.from(this.container.querySelectorAll('.tile, .skeleton'));
-      this.setupColumns();
-      tiles.forEach(t => this.addItem(t));
+      const tiles = Array.from(this.container.querySelectorAll('.tile'));
+      this.setupColumns(); tiles.forEach(t => this.addItem(t));
     }
   }
 };
 
-// ─── CATEGORY FILTER ──────────────────────────────────────────────────
-function setCat(slug, btn) {
-  currentSlug = slug;
-  currentPage = 1;
-  Masonry.reset();
+// ─── OBSERVERS ─────────────────────────────────────────────────────
+function initObservers() {
+  // Lazy Image Loading
+  imageObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const wrap = entry.target;
+        const fullImg = wrap.querySelector('.full');
+        if (fullImg && fullImg.dataset.src) {
+          fullImg.src = fullImg.dataset.src;
+          fullImg.onload = () => wrap.classList.add('loaded');
+          imageObserver.unobserve(wrap);
+        }
+      }
+    });
+  }, { rootMargin: '300px 0px' });
 
+  // Infinite Scroll
+  scrollObserver = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting && !isLoading && currentPage < totalPages) {
+      loadNextPage();
+    }
+  }, { rootMargin: '400px' });
+  scrollObserver.observe(document.getElementById('loadMoreTrigger'));
+}
+
+// ─── CORE LOGIC ────────────────────────────────────────────────────
+async function fetchInitial() {
+  if (isLoading) return;
+  
+  const cached = Cache.get(currentSlug);
+  if (cached.length > 0 && currentPage === 1) {
+    renderBatch(cached, true);
+  } else {
+    showSkeletons();
+  }
+
+  isLoading = true;
+  try {
+    const posts = await getPostsBatch(1);
+    const latestCached = Cache.getLatestDate(currentSlug);
+    
+    if (posts.length > 0) {
+      Cache.set(currentSlug, posts);
+      
+      // Silent Refresh Logic
+      if (latestCached && posts[0].date > latestCached) {
+        needsRefresh = true;
+        // Als we bovenaan staan, direct verversen
+        if (window.scrollY < 100) performRefresh();
+      } else if (!latestCached || cached.length === 0) {
+        performRefresh(posts);
+      }
+    }
+    isLoading = false;
+  } catch (err) {
+    isLoading = false;
+    if (renderedIds.size === 0) showError('Fout bij laden.');
+  }
+}
+
+function performRefresh(posts) {
+  const container = document.getElementById('tileGrid');
+  container.style.opacity = '0';
+  setTimeout(async () => {
+    Masonry.reset();
+    const data = posts || await getPostsBatch(1);
+    renderBatch(data);
+    container.style.opacity = '1';
+    needsRefresh = false;
+  }, 300);
+}
+
+async function loadNextPage() {
+  if (isLoading || currentPage >= totalPages) return;
+  isLoading = true;
+  currentPage++;
+  try {
+    const posts = await getPostsBatch(currentPage);
+    renderBatch(posts);
+    isLoading = false;
+  } catch (e) { isLoading = false; }
+}
+
+async function getPostsBatch(page) {
+  let url = `${WP_BASE}/posts?per_page=${BATCH_SIZE}&page=${page}&_embed=1&_fields=id,title,date,slug,categories,featured_media,link,content,_links,_embedded`;
+  const search = document.getElementById('searchInput').value.trim();
+  if (search) url += `&search=${encodeURIComponent(search)}`;
+  else if (currentSlug) {
+    if (!categoryMap[currentSlug]) {
+      const cats = await (await fetch(`${WP_BASE}/categories?slug=${currentSlug}`)).json();
+      if (cats.length) categoryMap[currentSlug] = cats[0].id;
+    }
+    if (categoryMap[currentSlug]) url += `&categories=${categoryMap[currentSlug]}`;
+  }
+  const resp = await fetch(url);
+  totalPages = parseInt(resp.headers.get('X-WP-TotalPages') || '1');
+  return await resp.json();
+}
+
+function renderBatch(posts, isCache = false) {
+  document.querySelectorAll('.skeleton').forEach(s => s.remove());
+  posts.forEach((post, i) => {
+    if (renderedIds.has(post.id)) return;
+    renderedIds.add(post.id);
+    const tile = buildTile(post, i, isCache);
+    Masonry.addItem(tile);
+    imageObserver.observe(tile.querySelector('.tile-img-wrap'));
+  });
+}
+
+function buildTile(post, index, isCache) {
+  const tile = document.createElement('div');
+  tile.className = 'tile';
+  if (!isCache) tile.style.animationDelay = (index % 12 * 0.05) + 's';
+
+  const title = stripHtml(post.title.rendered);
+  const date = new Date(post.date).toLocaleDateString('nl-NL', {month:'long', year:'numeric'});
+  
+  let thumb = '', full = '';
+  try {
+    const media = post._embedded?.['wp:featuredmedia']?.[0];
+    if (media) {
+      thumb = media.media_details?.sizes?.thumbnail?.source_url || media.source_url;
+      full = media.media_details?.sizes?.medium_large?.source_url || media.media_details?.sizes?.large?.source_url || media.source_url;
+    }
+  } catch(e) {}
+
+  const isSold = title.toLowerCase().includes('verkocht');
+  const isRes  = title.toLowerCase().includes('gereserveerd');
+  let badge = isSold ? '<div class="tile-badge sold">Verkocht</div>' : (isRes ? '<div class="tile-badge res">Gereserveerd</div>' : '');
+
+  tile.innerHTML = `
+    ${badge}
+    <div class="tile-img-wrap">
+      <img class="thumb" src="${thumb}" alt="" aria-hidden="true">
+      <img class="full" data-src="${full}" alt="">
+    </div>
+    <div class="tile-body">
+      <div class="tile-title">${escHtml(title)}</div>
+      <div class="tile-date">${date}</div>
+    </div>`;
+
+  tile.onclick = () => openLb(tile, post);
+  return tile;
+}
+
+function showSkeletons() {
+  Masonry.reset();
+  for (let i = 0; i < 6; i++) {
+    const s = document.createElement('div');
+    s.className = 'skeleton';
+    s.innerHTML = `<div class="skeleton-img" style="height:${[200,240,180][i%3]}px"></div><div class="skeleton-body"><div class="skeleton-line short"></div><div class="skeleton-line"></div></div>`;
+    Masonry.addItem(s);
+  }
+}
+
+// ─── UI EVENTS ─────────────────────────────────────────────────────
+function setCat(slug, btn) {
+  if (currentSlug === slug && !btn?.classList.contains('drawer-a')) return;
+  currentSlug = slug; currentPage = 1; 
+  window.scrollTo(0,0);
+  
   document.querySelectorAll('.cat-pill, .drawer-a, .bnav-btn').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
 
-  const titles = {
-    'kasten':'Kasten','lampen':'Lampen','accessoires':'Accessoires','tafels':'Tafels',
-    'keramiek':'Keramiek','banken-en-fauteuils':'Banken & fauteuils',
-    'baby-kind':'Baby & kind','stoelen':'Stoelen','inspiratie':'Inspiratie',
-    'verkocht-sold':'Verkocht'
-  };
-  
+  const titles = {'kasten':'Kasten','lampen':'Lampen','accessoires':'Accessoires','tafels':'Tafels','keramiek':'Keramiek','banken-en-fauteuils':'Banken & fauteuils','baby-kind':'Baby & kind','stoelen':'Stoelen','inspiratie':'Inspiratie','verkocht-sold':'Verkocht'};
   const bar = document.getElementById('pageBar');
-  const title = document.getElementById('pageTitle');
-  if (slug && titles[slug]) {
-    bar.classList.add('show');
-    title.textContent = titles[slug];
-  } else {
-    bar.classList.remove('show');
-  }
+  if (slug && titles[slug]) { bar.classList.add('show'); document.getElementById('pageTitle').textContent = titles[slug]; }
+  else bar.classList.remove('show');
 
   document.getElementById('searchInput').value = '';
   closeDrawer();
   fetchInitial();
 }
 
-// ─── SEARCH ───────────────────────────────────────────────────────────
 function onSearch() {
   clearTimeout(searchTimer);
-  searchTimer = setTimeout(() => {
-    currentPage = 1;
-    Masonry.reset();
-    fetchInitial();
-  }, 400);
+  searchTimer = setTimeout(() => { currentPage = 1; Masonry.reset(); fetchInitial(); }, 400);
 }
 
-// ─── FETCH INITIAL (NOW WITH _EMBED) ──────────────────────────────────
-async function fetchInitial() {
-  if (isLoading) return;
-  isLoading = true;
-
-  document.getElementById('stateMsg').innerHTML = '';
-
-  // Skeletons
-  for (let i = 0; i < 8; i++) {
-    const s = document.createElement('div');
-    s.className = 'skeleton'; s.dataset.skel = '1';
-    s.innerHTML = `<div class="skeleton-img" style="height:${[180,220,150,200][i%4]}px"></div><div class="skeleton-body"><div class="skeleton-line short"></div><div class="skeleton-line"></div></div>`;
-    Masonry.addItem(s);
-  }
-
-  try {
-    const posts = await getPostsBatch(1);
-    document.querySelectorAll('[data-skel]').forEach(s => s.remove());
-
-    if (!posts.length) {
-      showEmpty('Geen items gevonden.');
-      isLoading = false;
-      return;
-    }
-
-    renderBatch(posts);
-    isLoading = false;
-
-    if (totalPages > 1) {
-      backgroundLoad(2);
-    }
-  } catch (err) {
-    document.querySelectorAll('[data-skel]').forEach(s => s.remove());
-    showError('Fout bij laden. Probeer het opnieuw.');
-    isLoading = false;
-  }
-}
-
-// ─── API BATCH (WITH _EMBED) ──────────────────────────────────────────
-async function getPostsBatch(page) {
-  let url = `${WP_BASE}/posts?per_page=${BATCH_SIZE}&page=${page}&_embed=1&_fields=id,title,date,slug,categories,featured_media,link,content,_links,_embedded`;
-  
-  const search = document.getElementById('searchInput').value.trim();
-  if (search) {
-    url += `&search=${encodeURIComponent(search)}`;
-  } else if (currentSlug) {
-    if (!categoryMap[currentSlug]) {
-      const catResp = await fetch(`${WP_BASE}/categories?slug=${currentSlug}`);
-      const cats = await catResp.json();
-      if (cats.length) categoryMap[currentSlug] = cats[0].id;
-    }
-    if (categoryMap[currentSlug]) url += `&categories=${categoryMap[currentSlug]}`;
-  }
-
-  const resp = await fetch(url);
-  totalPages = parseInt(resp.headers.get('X-WP-TotalPages') || '1');
-  return await resp.json();
-}
-
-function renderBatch(posts) {
-  posts.forEach((post, i) => {
-    if (renderedIds.has(post.id)) return;
-    renderedIds.add(post.id);
-    const tile = buildTile(post, i);
-    Masonry.addItem(tile);
-  });
-}
-
-// ─── BUILD TILE (DIRECT FROM EMBED) ───────────────────────────────────
-function buildTile(post, index) {
-  const tile = document.createElement('div');
-  tile.className = 'tile';
-  tile.style.animationDelay = (index * 0.03) + 's';
-
-  const title = stripHtml(post.title.rendered);
-  const date = new Date(post.date).toLocaleDateString('nl-NL', {month:'long', year:'numeric'});
-  
-  // Extract images from embedded media (no fetch() needed!)
-  let src = '';
-  let srcLarge = '';
-  try {
-    const media = post._embedded?.['wp:featuredmedia']?.[0];
-    if (media) {
-      src = media.media_details?.sizes?.medium?.source_url || media.source_url;
-      srcLarge = media.media_details?.sizes?.large?.source_url || media.source_url;
-    }
-  } catch(e) {}
-
-  const isSold = title.toLowerCase().includes('verkocht');
-  const isRes  = title.toLowerCase().includes('gereserveerd');
-  let badge = '';
-  if (isSold) badge = '<div class="tile-badge sold">Verkocht</div>';
-  else if (isRes) badge = '<div class="tile-badge res">Gereserveerd</div>';
-
-  tile.innerHTML = `
-    ${badge}
-    ${src ? `<img src="${src}" alt="" loading="lazy" ${renderedIds.size <= 4 ? 'fetchpriority="high"' : ''}>` : `<div style="aspect-ratio:1;background:var(--sand-lt)"></div>`}
-    <div class="tile-body">
-      <div class="tile-title">${escHtml(title)}</div>
-      <div class="tile-date">${date}</div>
-    </div>`;
-
-  tile.dataset.id = post.id;
-  tile.dataset.title = title;
-  tile.dataset.url = post.link;
-  tile.dataset.img = src;
-  tile.dataset.imgLarge = srcLarge;
-  tile.addEventListener('click', () => openLb(tile, post));
-  return tile;
-}
-
-async function backgroundLoad(page) {
-  if (page > totalPages) return;
-  await new Promise(r => setTimeout(r, 800));
-  const posts = await getPostsBatch(page);
-  renderBatch(posts);
-  backgroundLoad(page + 1);
-}
-
-// ─── LIGHTBOX (BYPASS CORS FOR MEDIA) ─────────────────────────────────
+// ─── LIGHTBOX ──────────────────────────────────────────────────────
 async function openLb(tile, post) {
-  lbPostId = tile.dataset.id;
   const lb = document.getElementById('lightbox');
-  const mainImg = document.getElementById('lbImg');
-  
-  mainImg.src = tile.dataset.imgLarge || tile.dataset.img || '';
-  document.getElementById('lbTitle').textContent = tile.dataset.title;
-  document.getElementById('lbDesc').textContent = '';
+  document.getElementById('lbImg').src = tile.querySelector('.full').src;
+  document.getElementById('lbTitle').textContent = stripHtml(post.title.rendered);
+  document.getElementById('lbDesc').textContent = 'Laden...';
   document.getElementById('lbGallery').innerHTML = '';
-  document.getElementById('lbSkel').classList.add('show');
-  document.getElementById('lbMail').href = `mailto:marlou@vanoudedingen.nl?subject=Interesse in: ${encodeURIComponent(tile.dataset.title)}`;
-  document.getElementById('lbSite').href = tile.dataset.url;
+  document.getElementById('lbMail').href = `mailto:marlou@vanoudedingen.nl?subject=Interesse in: ${encodeURIComponent(stripHtml(post.title.rendered))}`;
+  document.getElementById('lbSite').href = post.link;
 
   lb.classList.add('open');
-  lb.scrollTo(0,0);
   document.body.style.overflow = 'hidden';
 
   try {
-    // Only fetch description (Text API usually has no CORS issue)
-    const resp = await fetch(`${WP_BASE}/posts/${lbPostId}?_fields=content`);
-    const postData = await resp.json();
-    
-    if (lbPostId !== tile.dataset.id) return;
-    document.getElementById('lbSkel').classList.remove('show');
-    document.getElementById('lbDesc').textContent = stripHtml(postData.content.rendered).trim();
+    const data = await (await fetch(`${WP_BASE}/posts/${post.id}?_fields=content`)).json();
+    const content = data.content.rendered;
+    document.getElementById('lbDesc').textContent = stripHtml(content).trim();
 
-    // For Gallery: Try parsing image URLs from post content to bypass blocked media API
-    const content = postData.content.rendered;
     const imgRegex = /<img[^>]+src=["']([^"']+)["']/g;
-    let match;
-    const galleryUrls = [];
-    while ((match = imgRegex.exec(content)) !== null) {
-      if (!galleryUrls.includes(match[1])) galleryUrls.push(match[1]);
-    }
+    let match, galleryUrls = [];
+    while ((match = imgRegex.exec(content)) !== null) if (!galleryUrls.includes(match[1])) galleryUrls.push(match[1]);
 
     if (galleryUrls.length > 0) {
       const gallery = document.getElementById('lbGallery');
@@ -601,57 +533,58 @@ async function openLb(tile, post) {
         thumb.onclick = () => {
           document.querySelectorAll('.lb-thumb').forEach(t => t.classList.remove('active'));
           thumb.classList.add('active');
-          mainImg.src = url;
+          document.getElementById('lbImg').src = url;
         };
         gallery.appendChild(thumb);
       });
     }
-  } catch(e) {
-    document.getElementById('lbSkel').classList.remove('show');
-  }
+  } catch(e) { document.getElementById('lbDesc').textContent = ''; }
 }
 
 function closeLb() {
   document.getElementById('lightbox').classList.remove('open');
   document.body.style.overflow = '';
+  if (needsRefresh) performRefresh();
 }
 
-// ─── HELPERS ──────────────────────────────────────────────────────────
-function stripHtml(html) {
-  const d = document.createElement('div');
-  d.innerHTML = html;
-  return d.textContent || d.innerText || '';
+// ─── HELPERS ───────────────────────────────────────────────────────
+function stripHtml(h) { const d = document.createElement('div'); d.innerHTML = h; return d.textContent || d.innerText || ''; }
+function escHtml(s) { return s ? s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') : ''; }
+function toggleDrawer() { 
+  const open = document.getElementById('drawer').classList.toggle('open');
+  document.getElementById('overlay').classList.toggle('open', open);
+  document.getElementById('menuBtn').classList.toggle('open', open);
+  document.body.style.overflow = open ? 'hidden' : '';
 }
-function escHtml(s) {
-  return s ? s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') : '';
+function closeDrawer() { 
+  document.getElementById('drawer').classList.remove('open');
+  document.getElementById('overlay').classList.remove('open');
+  document.getElementById('menuBtn').classList.remove('open');
+  document.body.style.overflow = '';
 }
-function setBA(btn) {
-  document.querySelectorAll('.bnav-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-}
+function setBA(btn) { document.querySelectorAll('.bnav-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
+function showToast(m) { const t = document.getElementById('offlineToast'); t.textContent = m; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); }
 
-// ─── UI STATES ────────────────────────────────────────────────────────
-function showEmpty(msg) {
-  document.getElementById('stateMsg').innerHTML = `<div class="state-msg"><h3>Niets gevonden</h3><p>${msg}</p></div>`;
-}
-function showError(msg) {
-  document.getElementById('stateMsg').innerHTML = `<div class="state-msg"><h3>Oops</h3><p>${msg}</p><button class="retry-btn" onclick="fetchInitial()">Opnieuw</button></div>`;
-}
-
-// ─── BOOT ─────────────────────────────────────────────────────────────
+// ─── BOOT ──────────────────────────────────────────────────────────
 Masonry.init();
+initObservers();
 fetchInitial();
 
-// Swipe detection
+window.addEventListener('offline', () => showToast('📵 Geen internetverbinding'));
+window.addEventListener('online',  () => showToast('✅ Verbinding hersteld'));
+window.onscroll = () => { if (needsRefresh && window.scrollY < 100) performRefresh(); };
+document.addEventListener('visibilitychange', () => { if (!document.hidden && needsRefresh) performRefresh(); });
+
+// Swipe lightbox
 let touchStartX = 0;
 document.getElementById('lbMainWrap').addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX);
 document.getElementById('lbMainWrap').addEventListener('touchend', e => {
   const diff = touchStartX - e.changedTouches[0].screenX;
   const thumbs = [...document.querySelectorAll('.lb-thumb')];
   if (thumbs.length < 2) return;
-  const activeIdx = thumbs.findIndex(t => t.classList.contains('active'));
-  if (diff > 50 && activeIdx < thumbs.length - 1) thumbs[activeIdx+1].click();
-  if (diff < -50 && activeIdx > 0) thumbs[activeIdx-1].click();
+  const idx = thumbs.findIndex(t => t.classList.contains('active'));
+  if (diff > 50 && idx < thumbs.length - 1) thumbs[idx+1].click();
+  if (diff < -50 && idx > 0) thumbs[idx-1].click();
 });
 </script>
 </body>

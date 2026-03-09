@@ -24,3 +24,6 @@ Description: Implement Network-First Opaque strategy for robust image loading an
 Type: patch
 Description: Bypass CORS blocks by using embedded media and native image loading
 
+## v1.0.7 (2026-03-09)
+Type: patch
+Description: Instant-on cache, lazy loading images, silent updates.
