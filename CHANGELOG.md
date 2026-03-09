@@ -59,3 +59,7 @@ Description: Update index.html version, optimize Service Worker for forced updat
 ## v1.1.5 (2026-03-09)
 Type: patch
 Description: Update index.html version, fix loadMoreTrigger positioning for correct lazy loading, and ensure initial observer setup.
+
+## v1.1.6 (2026-03-09)
+Type: patch
+Description: Fix lazy loading by adjusting loadMoreTrigger styling to be observable.

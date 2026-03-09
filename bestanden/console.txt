@@ -1,12 +1,11 @@
-email-decode.min.js:1 Uncaught SyntaxError: Unexpected token '<'
+email-decode.min.js:1 Uncaught SyntaxError: Unexpected token '<' (at email-decode.min.js:1:1)
 (index):362 fetchInitial started for slug:  fetchId: 1
 (index):1 Banner not shown: beforeinstallpromptevent.preventDefault() called. The page must call beforeinstallpromptevent.prompt() to show the banner.
 (index):421 getPostsBatch for slug:  page: 1 received totalPages: 194
 (index):390 fetchInitial finished for slug:  isLoading: false totalPages: 194
-(index):362 fetchInitial started for slug: te-koop-kasten fetchId: 2
-(index):421 getPostsBatch for slug: te-koop-kasten page: 1 received totalPages: 3
-(index):390 fetchInitial finished for slug: te-koop-kasten isLoading: false totalPages: 3
-(index):421 getPostsBatch for slug: te-koop-kasten page: 2 received totalPages: 3
-(index):362 fetchInitial started for slug:  fetchId: 3
-(index):421 getPostsBatch for slug:  page: 1 received totalPages: 194
-(index):390 fetchInitial finished for slug:  isLoading: false totalPages: 194
+(index):362 fetchInitial started for slug: tafels fetchId: 2
+(index):421 getPostsBatch for slug: tafels page: 1 received totalPages: 2
+(index):390 fetchInitial finished for slug: tafels isLoading: false totalPages: 2
+(index):362 fetchInitial started for slug: baby-kind fetchId: 3
+(index):421 getPostsBatch for slug: baby-kind page: 1 received totalPages: 3
+(index):390 fetchInitial finished for slug: baby-kind isLoading: false totalPages: 3
