@@ -194,7 +194,7 @@ header { position:sticky; top:0; z-index:200; background:var(--brown); height:va
   <a class="drawer-a" onclick="setCat('verkocht-sold',this)">Verkocht</a>
   <div class="drawer-info">
     <p>Hallo! Ik ben Marlou. Al meer dan tien jaar zoek ik naar authentieke vintage stukken vol karakter.</p>
-    <a href="mailto:marlou@vanoudedingen.nl">marlou@vanoudedingen.nl →</a>
+    <a href="/cdn-cgi/l/email-protection#a0cdc1d2cccfd5e0d6c1cecfd5c4c5c4c9cec7c5ce8ececc"><span class="__cf_email__" data-cfemail="107d71627c7f655066717e7f65747574797e77757e3e7e7c">[email&#160;protected]</span> →</a>
   </div>
   <div class="drawer-footer">Versie <span id="appVersion">v1.1.0</span></div>
 </div>
@@ -252,48 +252,34 @@ header { position:sticky; top:0; z-index:200; background:var(--brown); height:va
 
 <div id="offlineToast"></div>
 
-<script>
-const WP_BASE = 'https://vanoudedingen.nl/wp-json/wp/v2';
-const BATCH_SIZE = 24;
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// ─── CONFIG ────────────────────────────────────────────────────────
+const WP_BASE    = 'https://vanoudedingen.nl/wp-json/wp/v2';
+const BATCH_SIZE = 6;
 
-let currentSlug = '';
-let currentPage = 1;
-let totalPages  = 1;
-let isLoading   = false;
-let currentFetchId = 0; // Request tracker
-let searchTimer = null;
-let renderedIds = new Set();
-let needsRefresh = false;
+// ─── STATE ─────────────────────────────────────────────────────────
+let currentSlug   = '';
+let currentPage   = 1;
+let totalPages    = 1;
+let isLoading     = false;
+let currentFetchId = 0;
+let searchTimer   = null;
+let renderedIds   = new Set();
 let scrollObserver = null;
-let imageObserver = null;
+let imageObserver  = null;
 
+// Category ID map — hardcoded to avoid extra API call on every filter
 const categoryMap = {
-  'te-koop-kasten': 16,
-  'lampen': 17,
-  'accessoires': 20,
-  'tafels': 15,
-  'keramiek': 18,
+  'te-koop-kasten':      16,
+  'lampen':              17,
+  'accessoires':         20,
+  'tafels':              15,
+  'keramiek':            18,
   'banken-en-fauteuils': 14,
-  'baby-kind': 2606,
-  'stoelen': 1,
-  'inspiratie': 22,
-  'verkocht-sold': 1311
-};
-
-// ─── CACHE MANAGEMENT ──────────────────────────────────────────────
-const Cache = {
-  get(slug) {
-    const key = `cache_${slug || 'all'}`;
-    try { return JSON.parse(localStorage.getItem(key)) || []; } catch(e) { return []; }
-  },
-  set(slug, posts) {
-    const key = `cache_${slug || 'all'}`;
-    localStorage.setItem(key, JSON.stringify(posts.slice(0, 6)));
-  },
-  getLatestDate(slug) {
-    const posts = this.get(slug);
-    return posts.length ? posts[0].date : null;
-  }
+  'baby-kind':           2606,
+  'stoelen':             1,
+  'inspiratie':          22,
+  'verkocht-sold':       1311
 };
 
 // ─── MASONRY ───────────────────────────────────────────────────────
@@ -307,49 +293,57 @@ const Masonry = {
   getColCount() {
     const w = window.innerWidth;
     if (w >= 1280) return 6; if (w >= 1024) return 5;
-    if (w >= 768) return 4; if (w >= 540) return 3; return 2;
+    if (w >= 768)  return 4; if (w >= 540)  return 3; return 2;
   },
   setupColumns() {
     this.container.innerHTML = ''; this.cols = [];
     const count = this.getColCount();
     for (let i = 0; i < count; i++) {
-      const col = document.createElement('div'); col.className = 'grid-col';
-      this.container.appendChild(col); this.cols.push(col);
+      const col = document.createElement('div');
+      col.className = 'grid-col';
+      this.container.appendChild(col);
+      this.cols.push(col);
     }
   },
   addItem(item) {
+    // Insert into the shortest column for even distribution
     let shortest = this.cols[0];
     for (let i = 1; i < this.cols.length; i++) {
       if (this.cols[i].offsetHeight < shortest.offsetHeight) shortest = this.cols[i];
     }
     shortest.appendChild(item);
   },
-  reset() { this.setupColumns(); renderedIds.clear(); },
+  reset() {
+    this.setupColumns();
+    renderedIds.clear();
+  },
   onResize() {
     const newCount = this.getColCount();
     if (newCount !== this.cols.length) {
       const tiles = Array.from(this.container.querySelectorAll('.tile'));
-      this.setupColumns(); tiles.forEach(t => this.addItem(t));
+      this.setupColumns();
+      tiles.forEach(t => this.addItem(t));
     }
   }
 };
 
 // ─── OBSERVERS ─────────────────────────────────────────────────────
 function initObservers() {
+  // Lazy-load full images when tile enters viewport
   imageObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        const wrap = entry.target;
-        const fullImg = wrap.querySelector('.full');
-        if (fullImg && fullImg.dataset.src) {
-          fullImg.src = fullImg.dataset.src;
-          fullImg.onload = () => wrap.classList.add('loaded');
-          imageObserver.unobserve(wrap);
-        }
+      if (!entry.isIntersecting) return;
+      const wrap    = entry.target;
+      const fullImg = wrap.querySelector('.full');
+      if (fullImg && fullImg.dataset.src) {
+        fullImg.src    = fullImg.dataset.src;
+        fullImg.onload = () => wrap.classList.add('loaded');
+        imageObserver.unobserve(wrap);
       }
     });
   }, { rootMargin: '300px 0px' });
 
+  // Trigger next page load when bottom sentinel enters viewport
   scrollObserver = new IntersectionObserver((entries) => {
     if (entries[0].isIntersecting && !isLoading && currentPage < totalPages) {
       loadNextPage();
@@ -358,60 +352,33 @@ function initObservers() {
   scrollObserver.observe(document.getElementById('loadMoreTrigger'));
 }
 
-// ─── CORE LOGIC ────────────────────────────────────────────────────
+// ─── CORE FETCH ────────────────────────────────────────────────────
 async function fetchInitial() {
-  const fetchId = ++currentFetchId; // Increment ID
-  
-  if (currentPage === 1) {
-    Masonry.reset();
-    const cached = Cache.get(currentSlug);
-    if (cached.length > 0) {
-      renderBatch(cached, true);
-    } else {
-      showSkeletons();
-    }
-  }
-
+  const fetchId = ++currentFetchId;
   isLoading = true;
+  Masonry.reset();
   document.getElementById('stateMsg').innerHTML = '';
+  showSkeletons();
 
   try {
     const posts = await getPostsBatch(1);
-    if (fetchId !== currentFetchId) return; // Abort if another request started
+    if (fetchId !== currentFetchId) return; // Stale request — abort
 
-    const latestCached = Cache.getLatestDate(currentSlug);
-    
-    if (posts.length > 0) {
-      Cache.set(currentSlug, posts);
-      
-      // Force refresh if content is new or cache was empty
-      if (!latestCached || posts[0].date > latestCached || Cache.get(currentSlug).length === 0) {
-        needsRefresh = true;
-        if (window.scrollY < 100 || !latestCached) performRefresh(posts, fetchId);
-      }
-    } else if (renderedIds.size === 0) {
-      showEmpty('Geen items gevonden.');
+    document.querySelectorAll('.skeleton').forEach(s => s.remove());
+
+    if (posts.length === 0) {
+      const q = document.getElementById('searchInput').value.trim();
+      showEmpty(q ? `Geen resultaten voor "${q}".` : 'Geen items gevonden in deze categorie.');
+    } else {
+      renderBatch(posts);
     }
-    isLoading = false;
   } catch (err) {
     if (fetchId !== currentFetchId) return;
-    isLoading = false;
-    if (renderedIds.size === 0) showError('Fout bij laden.');
+    document.querySelectorAll('.skeleton').forEach(s => s.remove());
+    showError('Kon items niet laden. Controleer je verbinding.');
   }
-}
 
-function performRefresh(posts, fetchId) {
-  if (fetchId && fetchId !== currentFetchId) return;
-  
-  const container = document.getElementById('tileGrid');
-  container.style.opacity = '0';
-  setTimeout(async () => {
-    if (fetchId && fetchId !== currentFetchId) return;
-    Masonry.reset();
-    renderBatch(posts);
-    container.style.opacity = '1';
-    needsRefresh = false;
-  }, 300);
+  isLoading = false;
 }
 
 async function loadNextPage() {
@@ -423,62 +390,72 @@ async function loadNextPage() {
     const posts = await getPostsBatch(currentPage);
     if (fetchId !== currentFetchId) return;
     renderBatch(posts);
-    isLoading = false;
-  } catch (e) { 
-    if (fetchId === currentFetchId) isLoading = false; 
-  }
+  } catch (_) { /* silently ignore background load errors */ }
+  isLoading = false;
 }
 
 async function getPostsBatch(page) {
-  let url = `${WP_BASE}/posts?per_page=${BATCH_SIZE}&page=${page}&_embed=1&_fields=id,title,date,slug,categories,featured_media,link,content,_links,_embedded`;
+  // Lean request: no content, no full embed — only what tiles need
+  let url = `${WP_BASE}/posts?per_page=${BATCH_SIZE}&page=${page}&_embed=wp:featuredmedia`
+          + `&_fields=id,title,date,link,featured_media,_links,_embedded`;
+
   const search = document.getElementById('searchInput').value.trim();
-  if (search) url += `&search=${encodeURIComponent(search)}`;
-  else if (currentSlug && categoryMap[currentSlug]) {
+  if (search) {
+    url += `&search=${encodeURIComponent(search)}`;
+  } else if (currentSlug && categoryMap[currentSlug]) {
     url += `&categories=${categoryMap[currentSlug]}`;
   }
+
   const resp = await fetch(url);
+  if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
   totalPages = parseInt(resp.headers.get('X-WP-TotalPages') || '1');
-  return await resp.json();
+  return resp.json();
 }
 
-function renderBatch(posts, isCache = false) {
-  document.querySelectorAll('.skeleton').forEach(s => s.remove());
+function renderBatch(posts) {
   posts.forEach((post, i) => {
     if (renderedIds.has(post.id)) return;
     renderedIds.add(post.id);
-    const tile = buildTile(post, i, isCache);
+    const tile = buildTile(post, i);
     Masonry.addItem(tile);
     const imgWrap = tile.querySelector('.tile-img-wrap');
     if (imgWrap) imageObserver.observe(imgWrap);
   });
 }
 
-function buildTile(post, index, isCache) {
-  const tile = document.createElement('div');
+function buildTile(post, index) {
+  const tile  = document.createElement('div');
   tile.className = 'tile';
-  if (!isCache) tile.style.animationDelay = (index % 12 * 0.05) + 's';
+  tile.style.animationDelay = (index % 12 * 0.05) + 's';
 
   const title = stripHtml(post.title.rendered);
-  const date = new Date(post.date).toLocaleDateString('nl-NL', {month:'long', year:'numeric'});
-  
+  const date  = new Date(post.date).toLocaleDateString('nl-NL', { month: 'long', year: 'numeric' });
+
+  // Extract image URLs from embedded featured media
+  // thumb: tiny blur placeholder (thumbnail 150px)
+  // full:  tile display image (medium ~300px — fits tile width on any device)
   let thumb = '', full = '';
   try {
     const media = post._embedded?.['wp:featuredmedia']?.[0];
     if (media) {
       thumb = media.media_details?.sizes?.thumbnail?.source_url || media.source_url;
-      full = media.media_details?.sizes?.medium_large?.source_url || media.media_details?.sizes?.large?.source_url || media.source_url;
+      full  = media.media_details?.sizes?.medium?.source_url
+           || media.media_details?.sizes?.thumbnail?.source_url
+           || media.source_url;
     }
-  } catch(e) {}
+  } catch (_) {}
 
   const isSold = title.toLowerCase().includes('verkocht');
   const isRes  = title.toLowerCase().includes('gereserveerd');
-  let badge = isSold ? '<div class="tile-badge sold">Verkocht</div>' : (isRes ? '<div class="tile-badge res">Gereserveerd</div>' : '');
+  const badge  = isSold ? '<div class="tile-badge sold">Verkocht</div>'
+               : isRes  ? '<div class="tile-badge res">Gereserveerd</div>'
+               : '';
 
   tile.innerHTML = `
     ${badge}
     <div class="tile-img-wrap">
       <img class="thumb" src="${thumb}" alt="" aria-hidden="true">
-      <img class="full" data-src="${full}" alt="">
+      <img class="full" data-src="${full}" alt="${escHtml(title)}">
     </div>
     <div class="tile-body">
       <div class="tile-title">${escHtml(title)}</div>
@@ -493,7 +470,9 @@ function showSkeletons() {
   for (let i = 0; i < 6; i++) {
     const s = document.createElement('div');
     s.className = 'skeleton';
-    s.innerHTML = `<div class="skeleton-img" style="height:${[200,240,180][i%3]}px"></div><div class="skeleton-body"><div class="skeleton-line short"></div><div class="skeleton-line"></div></div>`;
+    s.innerHTML = `<div class="skeleton-img" style="height:${[200,240,180][i%3]}px"></div>`
+                + `<div class="skeleton-body"><div class="skeleton-line short"></div>`
+                + `<div class="skeleton-line"></div></div>`;
     Masonry.addItem(s);
   }
 }
@@ -501,32 +480,32 @@ function showSkeletons() {
 // ─── UI EVENTS ─────────────────────────────────────────────────────
 function setCat(slug, btn) {
   if (currentSlug === slug && !btn?.classList.contains('drawer-a')) return;
-  currentSlug = slug; currentPage = 1; 
-  
-  Masonry.reset();
-  window.scrollTo(0,0);
-  
+  currentSlug  = slug;
+  currentPage  = 1;
+  window.scrollTo(0, 0);
+
   document.querySelectorAll('.cat-pill, .drawer-a, .bnav-btn').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
 
   const titles = {
-    'te-koop-kasten':'Kasten',
-    'lampen':'Lampen',
-    'accessoires':'Accessoires',
-    'tafels':'Tafels',
-    'keramiek':'Keramiek',
-    'banken-en-fauteuils':'Banken & fauteuils',
-    'baby-kind':'Baby & kind',
-    'stoelen':'Stoelen',
-    'inspiratie':'Inspiratie',
-    'verkocht-sold':'Verkocht'
+    'te-koop-kasten':      'Kasten',
+    'lampen':              'Lampen',
+    'accessoires':         'Accessoires',
+    'tafels':              'Tafels',
+    'keramiek':            'Keramiek',
+    'banken-en-fauteuils': 'Banken & fauteuils',
+    'baby-kind':           'Baby & kind',
+    'stoelen':             'Stoelen',
+    'inspiratie':          'Inspiratie',
+    'verkocht-sold':       'Verkocht'
   };
   const bar = document.getElementById('pageBar');
-  if (slug && titles[slug]) { 
-    bar.classList.add('show'); 
-    document.getElementById('pageTitle').textContent = titles[slug]; 
+  if (slug && titles[slug]) {
+    bar.classList.add('show');
+    document.getElementById('pageTitle').textContent = titles[slug];
+  } else {
+    bar.classList.remove('show');
   }
-  else bar.classList.remove('show');
 
   document.getElementById('searchInput').value = '';
   closeDrawer();
@@ -535,97 +514,164 @@ function setCat(slug, btn) {
 
 function onSearch() {
   clearTimeout(searchTimer);
-  searchTimer = setTimeout(() => { 
-    currentPage = 1; 
-    Masonry.reset(); 
-    fetchInitial(); 
+  searchTimer = setTimeout(() => {
+    currentPage = 1;
+    fetchInitial();
   }, 400);
 }
 
 // ─── LIGHTBOX ──────────────────────────────────────────────────────
 async function openLb(tile, post) {
-  const lb = document.getElementById('lightbox');
-  document.getElementById('lbImg').src = tile.querySelector('.full').src || tile.querySelector('.thumb').src;
+  // Show lightbox immediately with already-loaded thumbnail
+  const fullSrc  = tile.querySelector('.full')?.src  || '';
+  const thumbSrc = tile.querySelector('.thumb')?.src || '';
+  document.getElementById('lbImg').src    = fullSrc || thumbSrc;
   document.getElementById('lbTitle').textContent = stripHtml(post.title.rendered);
-  document.getElementById('lbDesc').textContent = 'Laden...';
+  document.getElementById('lbDesc').textContent  = 'Laden…';
   document.getElementById('lbGallery').innerHTML = '';
   document.getElementById('lbMail').href = `mailto:marlou@vanoudedingen.nl?subject=Interesse in: ${encodeURIComponent(stripHtml(post.title.rendered))}`;
   document.getElementById('lbSite').href = post.link;
 
-  lb.classList.add('open');
+  document.getElementById('lightbox').classList.add('open');
   document.body.style.overflow = 'hidden';
 
+  // Fetch post content and media attachments in parallel
   try {
-    const data = await (await fetch(`${WP_BASE}/posts/${post.id}?_fields=content`)).json();
-    const content = data.content.rendered;
-    document.getElementById('lbDesc').textContent = stripHtml(content).trim();
+    const [postData, mediaData] = await Promise.all([
+      fetch(`${WP_BASE}/posts/${post.id}?_fields=content`).then(r => r.json()),
+      fetch(`${WP_BASE}/media?parent=${post.id}&per_page=20&_fields=id,source_url,alt_text,media_details`).then(r => r.json())
+    ]);
 
-    const imgRegex = /<img[^>]+src=["']([^"']+)["']/g;
-    let match, galleryUrls = [];
-    while ((match = imgRegex.exec(content)) !== null) if (!galleryUrls.includes(match[1])) galleryUrls.push(match[1]);
+    // Description from post content
+    document.getElementById('lbDesc').textContent =
+      stripHtml(postData.content?.rendered || '').trim();
 
-    if (galleryUrls.length > 0) {
+    // Gallery from media attachments
+    if (Array.isArray(mediaData) && mediaData.length > 0) {
       const gallery = document.getElementById('lbGallery');
-      galleryUrls.forEach((url, idx) => {
+      mediaData.forEach((media, idx) => {
+        // Thumbnail strip: medium is ruim voldoende voor 70×70px strip
+        const stripUrl = media.media_details?.sizes?.medium?.source_url
+                      || media.media_details?.sizes?.thumbnail?.source_url
+                      || media.source_url;
+        // Main lightbox image: large voor goede kwaliteit op volledig scherm
+        const largeUrl = media.media_details?.sizes?.large?.source_url
+                      || media.media_details?.sizes?.medium_large?.source_url
+                      || media.source_url;
+        const alt = media.alt_text || stripHtml(post.title.rendered);
+
+        // Set first gallery image as main lightbox image
+        if (idx === 0) document.getElementById('lbImg').src = largeUrl;
+
         const thumb = document.createElement('div');
-        thumb.className = `lb-thumb ${idx === 0 ? 'active' : ''}`;
-        thumb.innerHTML = `<img src="${url}" alt="">`;
+        thumb.className = `lb-thumb${idx === 0 ? ' active' : ''}`;
+        thumb.innerHTML = `<img src="${stripUrl}" alt="${escHtml(alt)}">`;
         thumb.onclick = () => {
           document.querySelectorAll('.lb-thumb').forEach(t => t.classList.remove('active'));
           thumb.classList.add('active');
-          document.getElementById('lbImg').src = url;
+          document.getElementById('lbImg').src = largeUrl;
         };
         gallery.appendChild(thumb);
       });
     }
-  } catch(e) { document.getElementById('lbDesc').textContent = ''; }
+  } catch (_) {
+    document.getElementById('lbDesc').textContent = '';
+  }
 }
 
 function closeLb() {
   document.getElementById('lightbox').classList.remove('open');
   document.body.style.overflow = '';
-  if (needsRefresh) performRefresh();
 }
 
 // ─── HELPERS ───────────────────────────────────────────────────────
-function stripHtml(h) { const d = document.createElement('div'); d.innerHTML = h; return d.textContent || d.innerText || ''; }
-function escHtml(s) { return s ? s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') : ''; }
-function toggleDrawer() { 
+function stripHtml(h) {
+  const d = document.createElement('div');
+  d.innerHTML = h;
+  return d.textContent || d.innerText || '';
+}
+function escHtml(s) {
+  return s ? s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;') : '';
+}
+function toggleDrawer() {
   const open = document.getElementById('drawer').classList.toggle('open');
   document.getElementById('overlay').classList.toggle('open', open);
   document.getElementById('menuBtn').classList.toggle('open', open);
   document.body.style.overflow = open ? 'hidden' : '';
 }
-function closeDrawer() { 
+function closeDrawer() {
   document.getElementById('drawer').classList.remove('open');
   document.getElementById('overlay').classList.remove('open');
   document.getElementById('menuBtn').classList.remove('open');
   document.body.style.overflow = '';
 }
-function setBA(btn) { document.querySelectorAll('.bnav-btn').forEach(b => b.classList.remove('active')); btn.classList.add('active'); }
-function showToast(m) { const t = document.getElementById('offlineToast'); t.textContent = m; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); }
-function showEmpty(msg) { document.getElementById('stateMsg').innerHTML = `<div class="state-msg"><h3>Niets gevonden</h3><p>${msg}</p></div>`; }
-function showError(msg) { document.getElementById('stateMsg').innerHTML = `<div class="state-msg"><h3>Oops</h3><p>${msg}</p><button class="retry-btn" onclick="fetchInitial()">Opnieuw</button></div>`; }
+function setBA(btn) {
+  document.querySelectorAll('.bnav-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+function showToast(m) {
+  const t = document.getElementById('offlineToast');
+  t.textContent = m;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+function showEmpty(msg) {
+  document.getElementById('stateMsg').innerHTML =
+    `<div class="state-msg"><h3>Niets gevonden</h3><p>${msg}</p></div>`;
+}
+function showError(msg) {
+  document.getElementById('stateMsg').innerHTML =
+    `<div class="state-msg"><h3>Oops</h3><p>${msg}</p><button class="retry-btn" onclick="fetchInitial()">Opnieuw</button></div>`;
+}
 
 // ─── BOOT ──────────────────────────────────────────────────────────
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('./sw.js').catch(() => {});
+}
+
 Masonry.init();
 initObservers();
 fetchInitial();
 
 window.addEventListener('offline', () => showToast('📵 Geen internetverbinding'));
 window.addEventListener('online',  () => showToast('✅ Verbinding hersteld'));
-window.onscroll = () => { if (needsRefresh && window.scrollY < 100) performRefresh(); };
-document.addEventListener('visibilitychange', () => { if (!document.hidden && needsRefresh) performRefresh(); });
 
+// Lightbox: swipe left/right to navigate gallery
 let touchStartX = 0;
 document.getElementById('lbMainWrap').addEventListener('touchstart', e => touchStartX = e.changedTouches[0].screenX);
 document.getElementById('lbMainWrap').addEventListener('touchend', e => {
-  const diff = touchStartX - e.changedTouches[0].screenX;
+  const diff   = touchStartX - e.changedTouches[0].screenX;
   const thumbs = [...document.querySelectorAll('.lb-thumb')];
-  if (thumbs.length < 2) return;
-  const idx = thumbs.findIndex(t => t.classList.contains('active'));
-  if (diff > 50 && idx < thumbs.length - 1) thumbs[idx+1].click();
-  if (diff < -50 && idx > 0) thumbs[idx-1].click();
+  if (Math.abs(diff) < 50 || thumbs.length === 0) return;
+  const activeIdx = thumbs.findIndex(t => t.classList.contains('active'));
+  const nextIdx   = diff > 0
+    ? Math.min(activeIdx + 1, thumbs.length - 1)
+    : Math.max(activeIdx - 1, 0);
+  if (nextIdx !== activeIdx) thumbs[nextIdx].click();
+});
+
+// Lightbox: close on Escape or backdrop click
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLb(); });
+document.getElementById('lightbox').addEventListener('click', function(e) {
+  if (e.target === this) closeLb();
+});
+
+// PWA install banner
+let deferredPrompt = null;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  deferredPrompt = e;
+  document.getElementById('installBanner').classList.add('show');
+});
+document.getElementById('installBtn').addEventListener('click', async () => {
+  if (!deferredPrompt) return;
+  deferredPrompt.prompt();
+  await deferredPrompt.userChoice;
+  deferredPrompt = null;
+  document.getElementById('installBanner').classList.remove('show');
+});
+document.getElementById('dismissBanner').addEventListener('click', () => {
+  document.getElementById('installBanner').classList.remove('show');
 });
 </script>
 </body>

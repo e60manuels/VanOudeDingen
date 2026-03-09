@@ -39,3 +39,7 @@ Description: Fix category filtering by hardcoding IDs and syncing slugs with WP 
 ## v1.1.0 (2026-03-09)
 Type: minor
 Description: Fix race conditions and improve concurrency in category switching.
+
+## v1.1.1 (2026-03-09)
+Type: patch
+Description: Deploy manual version of index.html and sw.js with race condition and gallery fixes.
