@@ -227,7 +227,7 @@ header { position:sticky; top:0; z-index:200; background:var(--brown); display:f
   </div>
 
   <div class="drawer-footer">
-    <span>Versie <span id="appVersion">v1.3.1</span></span>
+    <span>Versie <span id="appVersion">v1.3.2</span></span>
     <span class="lang-toggle" onclick="toggleLang()">NL | EN</span>
   </div>
 </div>
@@ -266,7 +266,7 @@ header { position:sticky; top:0; z-index:200; background:var(--brown); display:f
       <div class="lb-cat" id="lbCat"></div>
       <div class="lb-title" id="lbTitle"></div>
       <div class="lb-desc" id="lbDesc"></div>
-      <div class="lb-actions">
+      <div class="lb-actions" id="lbActions">
         <a href="" class="lb-cta" id="lbMail">Mail mij over dit item →</a>
         <a href="" class="lb-link" id="lbSite" target="_blank">Bekijk op site</a>
       </div>
@@ -537,6 +537,8 @@ async function openLb(tile, post) {
   const lbCat      = document.getElementById('lbCat');
   const lbDesc     = document.getElementById('lbDesc');
   const lbGallery  = document.getElementById('lbGallery');
+  const lbMail     = document.getElementById('lbMail');
+  const lbSite     = document.getElementById('lbSite');
 
   // Show lightbox immediately with already-loaded image
   const tileImg = tile.querySelector('.tile-img-wrap img');
@@ -547,8 +549,8 @@ async function openLb(tile, post) {
   lbCat.textContent   = 'Item';
   lbDesc.textContent  = 'Laden…';
   lbGallery.innerHTML = '';
-  document.getElementById('lbMail').href = `mailto:marlou@vanoudedingen.nl?subject=Interesse in: ${encodeURIComponent(stripHtml(post.title.rendered))}`;
-  document.getElementById('lbSite').href = post.link;
+  lbMail.href = `mailto:marlou@vanoudedingen.nl?subject=Interesse in: ${encodeURIComponent(stripHtml(post.title.rendered))}`;
+  lbSite.href = post.link;
 
   document.getElementById('lightbox').classList.add('open');
   document.body.style.overflow = 'hidden';
@@ -630,6 +632,8 @@ async function openPage(slug) {
   const lbDesc     = document.getElementById('lbDesc');
   const lbCat      = document.getElementById('lbCat');
   const lbGallery  = document.getElementById('lbGallery');
+  const lbMail     = document.getElementById('lbMail'); // Added
+  const lbSite     = document.getElementById('lbSite'); // Added
 
   lbImg.src = '';
   lbMainWrap.style.display = 'none';
@@ -641,18 +645,9 @@ async function openPage(slug) {
   document.getElementById('lightbox').classList.add('open');
   document.body.style.overflow = 'hidden';
 
-  try {
-    const pages = await fetch(`${WP_BASE}/pages?slug=${slug}&_fields=title,content`).then(r => r.json());
-    if (pages && pages.length > 0) {
-      lbTitle.textContent = stripHtml(pages[0].title.rendered);
-      lbDesc.innerHTML = pages[0].content.rendered;
-    } else {
-      lbTitle.textContent = 'Niet gevonden';
-    }
-  } catch (err) {
-    lbTitle.textContent = 'Fout bij laden';
-  }
-}
+  // Hide mail/site links for pages
+  lbMail.href = '';
+  lbSite.href = '';
 
 function toggleLang() {
   window.location.href = 'https://vanoudedingen.nl/english/';

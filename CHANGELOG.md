@@ -87,3 +87,7 @@ Description: Major redesign: Slim header, sticky menu in category bar, drawer se
 ## v1.3.1 (2026-03-10)
 Type: patch
 Description: Fix header/cat-bar alignment, restore sticky menu button, sync categories, and fix lightbox/page-loading interactivity.
+
+## v1.3.2 (2026-03-10)
+Type: patch
+Description: Fix lightbox/page-loading interactivity (tiles and brand pages) by correcting missing HTML ID.
