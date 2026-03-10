@@ -83,3 +83,7 @@ Description: Force logo text to single line with fluid scaling, fix sticky categ
 ## v1.3.0 (2026-03-10)
 Type: minor
 Description: Major redesign: Slim header, sticky menu in category bar, drawer search, integrated brand pages (Over mij, Info) via Lightbox, and social media icons.
+
+## v1.3.1 (2026-03-10)
+Type: patch
+Description: Fix header/cat-bar alignment, restore sticky menu button, sync categories, and fix lightbox/page-loading interactivity.

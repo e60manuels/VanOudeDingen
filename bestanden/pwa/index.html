@@ -40,7 +40,7 @@ header { position:sticky; top:0; z-index:200; background:var(--brown); display:f
 .cat-bar { background:var(--surface); border-bottom:1px solid var(--sand); position:sticky; top:46px; z-index:100; display:flex; align-items:center; }
 .cat-bar-inner { flex:1; overflow-x:auto; scrollbar-width:none; -webkit-overflow-scrolling:touch; display:flex; padding:0 44px 0 6px; }
 .cat-bar-inner::-webkit-scrollbar { display:none; }
-.cat-menu-btn-wrap { position:absolute; right:0; top:0; bottom:0; width:50px; background:linear-gradient(to right, transparent, var(--surface) 30%); display:flex; align-items:center; justify-content:flex-end; padding-right:8px; z-index:10; }
+.cat-menu-btn-wrap { position:sticky; right:0; top:0; bottom:0; width:50px; background:linear-gradient(to right, transparent, var(--surface) 30%); display:flex; align-items:center; justify-content:flex-end; padding-right:8px; z-index:10; flex-shrink:0; margin-left:-50px; }
 .cat-pill { display:inline-flex; align-items:center; gap:5px; padding:12px 14px; font-size:12px; color:var(--text-soft); border-bottom:2px solid transparent; cursor:pointer; white-space:nowrap; background:none; border-top:none; border-left:none; border-right:none; transition:.2s; }
 .cat-pill:hover { color:var(--rust); }
 .cat-pill.active { color:var(--rust); border-bottom-color:var(--rust); font-weight:500; }
@@ -227,7 +227,7 @@ header { position:sticky; top:0; z-index:200; background:var(--brown); display:f
   </div>
 
   <div class="drawer-footer">
-    <span>Versie <span id="appVersion">v1.3.0</span></span>
+    <span>Versie <span id="appVersion">v1.3.1</span></span>
     <span class="lang-toggle" onclick="toggleLang()">NL | EN</span>
   </div>
 </div>
@@ -236,13 +236,15 @@ header { position:sticky; top:0; z-index:200; background:var(--brown); display:f
   <div class="cat-bar-inner" id="catBar">
     <button class="cat-pill active" onclick="setCat('',this)">Alles</button>
     <button class="cat-pill" onclick="setCat('te-koop-kasten',this)">Kasten</button>
+    <button class="cat-pill" onclick="setCat('tafels',this)">Tafels</button>
+    <button class="cat-pill" onclick="setCat('stoelen',this)">Stoelen</button>
+    <button class="cat-pill" onclick="setCat('banken-en-fauteuils',this)">Banken</button>
     <button class="cat-pill" onclick="setCat('lampen',this)">Lampen</button>
     <button class="cat-pill" onclick="setCat('accessoires',this)">Accessoires</button>
-    <button class="cat-pill" onclick="setCat('tafels',this)">Tafels</button>
     <button class="cat-pill" onclick="setCat('keramiek',this)">Keramiek</button>
-    <button class="cat-pill" onclick="setCat('banken-en-fauteuils',this)">Banken</button>
     <button class="cat-pill" onclick="setCat('baby-kind',this)">Baby & kind</button>
-    <button class="cat-pill" onclick="setCat('stoelen',this)">Stoelen</button>
+    <button class="cat-pill" onclick="setCat('elektronica',this)">Elektronica</button>
+    <button class="cat-pill" onclick="setCat('koopjeshoek',this)">Koopjeshoek</button>
   </div>
   <div class="cat-menu-btn-wrap">
     <button class="hamburger" id="menuBtn" onclick="toggleDrawer()" aria-label="Menu">
@@ -528,15 +530,23 @@ function onSearch() {
 
 // ─── LIGHTBOX ──────────────────────────────────────────────────────
 async function openLb(tile, post) {
+  const lbImg      = document.getElementById('lbImg');
+  const lbMainWrap = document.getElementById('lbMainWrap');
+  const lbActions  = document.getElementById('lbActions');
+  const lbTitle    = document.getElementById('lbTitle');
+  const lbCat      = document.getElementById('lbCat');
+  const lbDesc     = document.getElementById('lbDesc');
+  const lbGallery  = document.getElementById('lbGallery');
+
   // Show lightbox immediately with already-loaded image
   const tileImg = tile.querySelector('.tile-img-wrap img');
-  document.getElementById('lbMainWrap').style.display = 'flex';
-  document.getElementById('lbActions').style.display = 'flex';
-  document.getElementById('lbImg').src = tileImg?.src || '';
-  document.getElementById('lbTitle').textContent = stripHtml(post.title.rendered);
-  document.getElementById('lbCat').textContent = 'Item';
-  document.getElementById('lbDesc').textContent  = 'Laden…';
-  document.getElementById('lbGallery').innerHTML = '';
+  lbMainWrap.style.display = 'flex';
+  lbActions.style.display  = 'flex';
+  lbImg.src = tileImg?.src || '';
+  lbTitle.textContent = stripHtml(post.title.rendered);
+  lbCat.textContent   = 'Item';
+  lbDesc.textContent  = 'Laden…';
+  lbGallery.innerHTML = '';
   document.getElementById('lbMail').href = `mailto:marlou@vanoudedingen.nl?subject=Interesse in: ${encodeURIComponent(stripHtml(post.title.rendered))}`;
   document.getElementById('lbSite').href = post.link;
 
@@ -551,25 +561,16 @@ async function openLb(tile, post) {
     ]);
 
     // Description from post content
-    document.getElementById('lbDesc').innerHTML =
-      (postData.content?.rendered || '').trim();
+    lbDesc.innerHTML = (postData.content?.rendered || '').trim();
 
     // Gallery from media attachments
     if (Array.isArray(mediaData) && mediaData.length > 0) {
-      const gallery = document.getElementById('lbGallery');
       mediaData.forEach((media, idx) => {
-        // Thumbnail strip: medium is ruim voldoende voor 70×70px strip
-        const stripUrl = media.media_details?.sizes?.medium?.source_url
-                      || media.media_details?.sizes?.thumbnail?.source_url
-                      || media.source_url;
-        // Main lightbox image: large voor goede kwaliteit op volledig scherm
-        const largeUrl = media.media_details?.sizes?.large?.source_url
-                      || media.media_details?.sizes?.medium_large?.source_url
-                      || media.source_url;
+        const stripUrl = media.media_details?.sizes?.medium?.source_url || media.source_url;
+        const largeUrl = media.media_details?.sizes?.large?.source_url || media.source_url;
         const alt = media.alt_text || stripHtml(post.title.rendered);
 
-        // Set first gallery image as main lightbox image
-        if (idx === 0) document.getElementById('lbImg').src = largeUrl;
+        if (idx === 0) lbImg.src = largeUrl;
 
         const thumb = document.createElement('div');
         thumb.className = `lb-thumb${idx === 0 ? ' active' : ''}`;
@@ -577,20 +578,19 @@ async function openLb(tile, post) {
         thumb.onclick = () => {
           document.querySelectorAll('.lb-thumb').forEach(t => t.classList.remove('active'));
           thumb.classList.add('active');
-          document.getElementById('lbImg').src = largeUrl;
+          lbImg.src = largeUrl;
         };
-        gallery.appendChild(thumb);
+        lbGallery.appendChild(thumb);
       });
     }
   } catch (_) {
-    document.getElementById('lbDesc').textContent = '';
+    lbDesc.textContent = '';
   }
 }
 
 function closeLb() {
   document.getElementById('lightbox').classList.remove('open');
   document.body.style.overflow = '';
-  // Cleanup
   document.getElementById('lbImg').src = '';
   document.getElementById('lbDesc').innerHTML = '';
 }
@@ -623,26 +623,34 @@ function setBA(btn) {
 
 async function openPage(slug) {
   closeDrawer();
-  document.getElementById('lbImg').src = '';
-  document.getElementById('lbMainWrap').style.display = 'none';
-  document.getElementById('lbGallery').innerHTML = '';
-  document.getElementById('lbTitle').textContent = 'Laden…';
-  document.getElementById('lbDesc').textContent = '';
-  document.getElementById('lbCat').textContent = 'Pagina';
-  document.getElementById('lbActions').style.display = 'none';
+  const lbImg      = document.getElementById('lbImg');
+  const lbMainWrap = document.getElementById('lbMainWrap');
+  const lbActions  = document.getElementById('lbActions');
+  const lbTitle    = document.getElementById('lbTitle');
+  const lbDesc     = document.getElementById('lbDesc');
+  const lbCat      = document.getElementById('lbCat');
+  const lbGallery  = document.getElementById('lbGallery');
+
+  lbImg.src = '';
+  lbMainWrap.style.display = 'none';
+  lbActions.style.display  = 'none';
+  lbGallery.innerHTML = '';
+  lbTitle.textContent = 'Laden…';
+  lbDesc.textContent  = '';
+  lbCat.textContent   = 'Pagina';
   document.getElementById('lightbox').classList.add('open');
   document.body.style.overflow = 'hidden';
 
   try {
     const pages = await fetch(`${WP_BASE}/pages?slug=${slug}&_fields=title,content`).then(r => r.json());
     if (pages && pages.length > 0) {
-      document.getElementById('lbTitle').textContent = stripHtml(pages[0].title.rendered);
-      document.getElementById('lbDesc').innerHTML = pages[0].content.rendered;
+      lbTitle.textContent = stripHtml(pages[0].title.rendered);
+      lbDesc.innerHTML = pages[0].content.rendered;
     } else {
-      document.getElementById('lbTitle').textContent = 'Niet gevonden';
+      lbTitle.textContent = 'Niet gevonden';
     }
   } catch (err) {
-    document.getElementById('lbTitle').textContent = 'Fout bij laden';
+    lbTitle.textContent = 'Fout bij laden';
   }
 }
 
