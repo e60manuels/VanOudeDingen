@@ -1,4 +1,4 @@
-const VERSION = '1.1.8';
+const VERSION = '1.1.9';
 const CACHE_SHELL  = `vod-shell-v${VERSION}`;
 const CACHE_IMAGES = `vod-images-v${VERSION}`;
 const CACHE_API    = `vod-api-v${VERSION}`;

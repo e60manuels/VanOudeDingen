@@ -71,3 +71,7 @@ Description: fix: replace IntersectionObserver with scroll event for infinite sc
 ## v1.1.8 (2026-03-10)
 Type: patch
 Description: Optimize infinite scroll (batch size, trigger distance), redesign header to two rows, remove bottom nav, and add menu close button.
+
+## v1.1.9 (2026-03-10)
+Type: patch
+Description: Unify logo text to single line, increase initial batch size to 12, use Special Elite font for menu header, and refine menu close button alignment.

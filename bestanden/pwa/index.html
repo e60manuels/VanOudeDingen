@@ -33,9 +33,8 @@ body { font-family: 'Jost', sans-serif; background: var(--bg); color: var(--brow
 
 /* HEADER */
 header { position:sticky; top:0; z-index:200; background:var(--brown); display:flex; flex-direction:column; padding:10px 16px; gap:10px; box-shadow:0 2px 12px rgba(44,26,14,.3); }
-.logo-wrap { display:flex; align-items:baseline; gap:8px; text-decoration:none; width:100%; justify-content:center; }
-.logo-name { font-family:'Special Elite', cursive; font-size:18px; color:#FDFAF5; line-height:1; }
-.logo-tag { font-family:'Special Elite', cursive; font-size:11px; color:var(--gold); }
+.logo-wrap { text-decoration:none; width:100%; text-align:center; }
+.logo-text { font-family:'Special Elite', cursive; font-size:16px; color:#FDFAF5; line-height:1.2; }
 .header-bottom { display:flex; align-items:center; gap:12px; width:100%; }
 .header-search { flex:1; position:relative; }
 .header-search input { width:100%; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.15); border-radius:20px; padding:8px 14px 8px 36px; color:white; font-family:'Jost',sans-serif; font-size:14px; outline:none; transition:.2s; }
@@ -53,9 +52,9 @@ header { position:sticky; top:0; z-index:200; background:var(--brown); display:f
 .overlay.open { opacity:1; pointer-events:all; }
 .drawer { position:fixed; top:0; right:0; width:min(300px,85vw); height:100%; background:var(--surface); z-index:400; transform:translateX(100%); transition:transform .3s cubic-bezier(.4,0,.2,1); overflow-y:auto; padding-bottom:var(--safe-bot); }
 .drawer.open { transform:translateX(0); }
-.drawer-close { position:absolute; top:calc(10px + var(--safe-top)); right:10px; background:rgba(255,255,255,0.15); border:none; color:white; width:36px; height:36px; border-radius:50%; font-size:20px; cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:10; }
+.drawer-close { position:absolute; top:calc(16px + var(--safe-top)); right:16px; background:rgba(255,255,255,0.15); border:none; color:white; width:36px; height:36px; border-radius:50%; font-size:20px; cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:10; }
 .drawer-hd { background:var(--brown); padding:20px; padding-top:calc(20px + var(--safe-top)); }
-.drawer-hd-name { font-family:'Lora',serif; font-size:20px; color:#FDFAF5; margin-bottom:4px; }
+.drawer-hd-name { font-family:'Special Elite', cursive; font-size:20px; color:#FDFAF5; margin-bottom:4px; }
 .drawer-hd-sub { font-size:11px; letter-spacing:.15em; text-transform:uppercase; color:var(--gold); }
 .drawer-sec { font-size:10px; font-weight:500; letter-spacing:.2em; text-transform:uppercase; color:var(--rust); padding:20px 20px 8px; }
 .drawer-a { display:flex; justify-content:space-between; align-items:center; padding:12px 20px; text-decoration:none; color:var(--brown-mid); font-size:15px; border-bottom:1px solid var(--sand-lt); cursor:pointer; transition:.15s; }
@@ -153,8 +152,7 @@ header { position:sticky; top:0; z-index:200; background:var(--brown); display:f
 
 <header>
   <a href="#" class="logo-wrap">
-    <span class="logo-name">VAN OUDE DINGEN,</span>
-    <span class="logo-tag">de mensen die voorbij gaan...</span>
+    <span class="logo-text">VAN OUDE DINGEN, de mensen die voorbij gaan...</span>
   </a>
   <div class="header-bottom">
     <div class="header-search">
@@ -190,7 +188,7 @@ header { position:sticky; top:0; z-index:200; background:var(--brown); display:f
     <p>Hallo! Ik ben Marlou. Al meer dan tien jaar zoek ik naar authentieke vintage stukken vol karakter.</p>
     <a href="/cdn-cgi/l/email-protection#a0cdc1d2cccfd5e0d6c1cecfd5c4c5c4c9cec7c5ce8ececc"><span class="__cf_email__" data-cfemail="107d71627c7f655066717e7f65747574797e77757e3e7e7c">[email&#160;protected]</span> →</a>
   </div>
-  <div class="drawer-footer">Versie <span id="appVersion">v1.1.8</span></div>
+  <div class="drawer-footer">Versie <span id="appVersion">v1.1.9</span></div>
 </div>
 
 <nav class="cat-bar">
@@ -233,7 +231,7 @@ header { position:sticky; top:0; z-index:200; background:var(--brown); display:f
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ─── CONFIG ────────────────────────────────────────────────────────
 const WP_BASE           = 'https://vanoudedingen.nl/wp-json/wp/v2';
-const BATCH_SIZE_INITIAL = 6;
+const BATCH_SIZE_INITIAL = 12;
 const BATCH_SIZE_NEXT    = 12;
 
 // ─── STATE ─────────────────────────────────────────────────────────
