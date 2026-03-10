@@ -90,12 +90,8 @@ header { position:sticky; top:0; z-index:200; background:var(--brown); height:va
 
 /* Image Loader */
 .tile-img-wrap { position: relative; width: 100%; overflow: hidden; background: var(--sand-lt); }
-.tile-img-wrap img { width: 100%; display: block; transition: opacity 0.4s ease, transform 0.4s ease; }
-.tile-img-wrap .thumb { filter: blur(10px); transform: scale(1.1); }
-.tile-img-wrap .full { position: absolute; top: 0; left: 0; opacity: 0; }
-.tile-img-wrap.loaded .full { opacity: 1; }
-.tile-img-wrap.loaded .thumb { opacity: 0; }
-.tile:hover .full { transform: scale(1.03); }
+.tile-img-wrap img { width: 100%; display: block; transition: transform 0.4s ease; }
+.tile:hover .tile-img-wrap img { transform: scale(1.03); }
 
 .tile-body { padding:8px 10px 10px; }
 .tile-title { font-family:'Lora',serif; font-size:13px; font-weight:500; color:var(--brown); line-height:1.35; }
@@ -215,7 +211,6 @@ header { position:sticky; top:0; z-index:200; background:var(--brown); height:va
 
 <div class="page-bar" id="pageBar"><h1 class="page-title" id="pageTitle"></h1></div>
 <div class="tile-grid" id="tileGrid"></div>
-<div id="loadMoreTrigger" style="height: 100px; margin-top: -50px; opacity: 0; pointer-events: none; z-index: -1;"></div>
 <div id="stateMsg"></div>
 
 <div class="lightbox" id="lightbox">
@@ -265,8 +260,6 @@ let isLoading     = false;
 let currentFetchId = 0;
 let searchTimer   = null;
 let renderedIds   = new Set();
-let scrollObserver = null;
-let imageObserver  = null;
 
 // Category ID map — hardcoded to avoid extra API call on every filter
 const categoryMap = {
@@ -326,31 +319,6 @@ const Masonry = {
     }
   }
 };
-
-// ─── OBSERVERS ─────────────────────────────────────────────────────
-function initObservers() {
-  // Lazy-load full images when tile enters viewport
-  imageObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (!entry.isIntersecting) return;
-      const wrap    = entry.target;
-      const fullImg = wrap.querySelector('.full');
-      if (fullImg && fullImg.dataset.src) {
-        fullImg.src    = fullImg.dataset.src;
-        fullImg.onload = () => wrap.classList.add('loaded');
-        imageObserver.unobserve(wrap);
-      }
-    });
-  }, { rootMargin: '300px 0px' });
-
-  // Trigger next page load when bottom sentinel enters viewport
-  scrollObserver = new IntersectionObserver((entries) => {
-    if (entries[0].isIntersecting && !isLoading && currentPage < totalPages) {
-      loadNextPage();
-    }
-  }, { rootMargin: '400px' });
-  scrollObserver.observe(document.getElementById('loadMoreTrigger'));
-}
 
 // ─── CORE FETCH ────────────────────────────────────────────────────
 async function fetchInitial() {
@@ -428,8 +396,6 @@ function renderBatch(posts) {
     renderedIds.add(post.id);
     const tile = buildTile(post, i);
     Masonry.addItem(tile);
-    const imgWrap = tile.querySelector('.tile-img-wrap');
-    if (imgWrap) imageObserver.observe(imgWrap);
   });
 }
 
@@ -464,8 +430,7 @@ function buildTile(post, index) {
   tile.innerHTML = `
     ${badge}
     <div class="tile-img-wrap">
-      <img class="thumb" src="${thumb}" alt="" aria-hidden="true">
-      <img class="full" data-src="${full}" alt="${escHtml(title)}">
+      <img src="${full}" alt="${escHtml(title)}" loading="lazy">
     </div>
     <div class="tile-body">
       <div class="tile-title">${escHtml(title)}</div>
@@ -532,12 +497,9 @@ function onSearch() {
 
 // ─── LIGHTBOX ──────────────────────────────────────────────────────
 async function openLb(tile, post) {
-  // Show lightbox immediately with already-loaded thumbnail
-  const fullEl   = tile.querySelector('.full');
-  const thumbEl  = tile.querySelector('.thumb');
-  const fullSrc  = fullEl?.src || fullEl?.dataset.src || '';
-  const thumbSrc = thumbEl?.src || '';
-  document.getElementById('lbImg').src = fullSrc || thumbSrc;
+  // Show lightbox immediately with already-loaded image
+  const tileImg = tile.querySelector('.tile-img-wrap img');
+  document.getElementById('lbImg').src = tileImg?.src || '';
   document.getElementById('lbTitle').textContent = stripHtml(post.title.rendered);
   document.getElementById('lbDesc').textContent  = 'Laden…';
   document.getElementById('lbGallery').innerHTML = '';
@@ -642,8 +604,15 @@ if ('serviceWorker' in navigator) {
 }
 
 Masonry.init();
-initObservers();
 fetchInitial();
+
+window.addEventListener('scroll', () => {
+  if (isLoading || currentPage >= totalPages) return;
+  const distanceFromBottom = document.documentElement.scrollHeight 
+                           - window.scrollY 
+                           - window.innerHeight;
+  if (distanceFromBottom < 300) loadNextPage();
+});
 
 window.addEventListener('offline', () => showToast('📵 Geen internetverbinding'));
 window.addEventListener('online',  () => showToast('✅ Verbinding hersteld'));

@@ -50,8 +50,8 @@ echo "Bumping version from $CURRENT_VERSION to $NEW_VERSION ($BUMP_TYPE)"
 echo "$NEW_VERSION" > "$VERSION_FILE"
 
 # 4. SERVICE WORKER CACHE BUSTING
-# Update: const CACHE = 'vod-v...'; to const CACHE = 'vod-v[new-version]';
-sed -i "s/const CACHE = 'vod-v.*';/const CACHE = 'vod-v$NEW_VERSION';/" "$SW_FILE"
+# Update: const VERSION = '...'; to const VERSION = '[new-version]';
+sed -i "s/const VERSION = '.*';/const VERSION = '$NEW_VERSION';/" "$SW_FILE"
 
 # 5. MANIFEST VERSION
 # Update: "version": "...",
