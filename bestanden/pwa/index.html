@@ -32,17 +32,22 @@ body { font-family: 'Jost', sans-serif; background: var(--bg); color: var(--brow
 .install-x { background:none; border:none; color:var(--sand); font-size:18px; cursor:pointer; opacity:.6; flex-shrink:0; }
 
 /* HEADER */
-header { position:sticky; top:0; z-index:200; background:var(--brown); display:flex; flex-direction:column; padding:10px 16px; gap:10px; box-shadow:0 2px 12px rgba(44,26,14,.3); }
-.logo-wrap { text-decoration:none; width:100%; text-align:center; overflow:hidden; }
-.logo-text { font-family:'Special Elite', cursive; font-size:clamp(10px, 3.8vw, 16px); color:#FDFAF5; line-height:1.2; white-space:nowrap; display:block; }
-.header-bottom { display:flex; align-items:center; gap:12px; width:100%; }
-.header-search { flex:1; position:relative; }
-.header-search input { width:100%; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.15); border-radius:20px; padding:8px 14px 8px 36px; color:white; font-family:'Jost',sans-serif; font-size:14px; outline:none; transition:.2s; }
-.header-search input::placeholder { color:rgba(255,255,255,.4); }
-.header-search input:focus { background:rgba(255,255,255,.18); border-color:rgba(255,255,255,.3); }
-.search-ic { position:absolute; left:12px; top:50%; transform:translateY(-50%); width:16px; height:16px; color:rgba(255,255,255,.4); }
+header { position:sticky; top:0; z-index:200; background:var(--brown); display:flex; align-items:center; justify-content:center; padding:12px 16px; box-shadow:0 2px 12px rgba(44,26,14,.3); height:46px; }
+.logo-wrap { text-decoration:none; overflow:hidden; display:flex; align-items:center; }
+.logo-text { font-family:'Special Elite', cursive; font-size:clamp(10px, 4vw, 17px); color:#FDFAF5; line-height:1; white-space:nowrap; }
+
+/* CAT BAR */
+.cat-bar { background:var(--surface); border-bottom:1px solid var(--sand); position:sticky; top:46px; z-index:100; display:flex; align-items:center; }
+.cat-bar-inner { flex:1; overflow-x:auto; scrollbar-width:none; -webkit-overflow-scrolling:touch; display:flex; padding:0 44px 0 6px; }
+.cat-bar-inner::-webkit-scrollbar { display:none; }
+.cat-menu-btn-wrap { position:absolute; right:0; top:0; bottom:0; width:50px; background:linear-gradient(to right, transparent, var(--surface) 30%); display:flex; align-items:center; justify-content:flex-end; padding-right:8px; z-index:10; }
+.cat-pill { display:inline-flex; align-items:center; gap:5px; padding:12px 14px; font-size:12px; color:var(--text-soft); border-bottom:2px solid transparent; cursor:pointer; white-space:nowrap; background:none; border-top:none; border-left:none; border-right:none; transition:.2s; }
+.cat-pill:hover { color:var(--rust); }
+.cat-pill.active { color:var(--rust); border-bottom-color:var(--rust); font-weight:500; }
+
 .hamburger { background:none; border:none; cursor:pointer; padding:6px; display:flex; flex-direction:column; gap:4px; flex-shrink:0; }
-.hamburger span { display:block; width:22px; height:2px; background:rgba(255,255,255,.8); border-radius:2px; transition:.25s; }
+.hamburger span { display:block; width:22px; height:2px; background:var(--brown); border-radius:2px; transition:.25s; opacity:0.7; }
+.hamburger.open span { background:var(--rust); opacity:1; }
 .hamburger.open span:nth-child(1) { transform:translateY(6px) rotate(45deg); }
 .hamburger.open span:nth-child(2) { opacity:0; }
 .hamburger.open span:nth-child(3) { transform:translateY(-6px) rotate(-45deg); }
@@ -56,15 +61,30 @@ header { position:sticky; top:0; z-index:200; background:var(--brown); display:f
 .drawer-hd { background:var(--brown); padding:20px; padding-top:calc(20px + var(--safe-top)); }
 .drawer-hd-name { font-family:'Special Elite', cursive; font-size:20px; color:#FDFAF5; margin-bottom:4px; }
 .drawer-hd-sub { font-size:11px; letter-spacing:.15em; text-transform:uppercase; color:var(--gold); }
+
+/* Drawer Search */
+.drawer-search-wrap { padding:16px 20px 8px; position:relative; }
+.drawer-search { width:100%; background:var(--sand-lt); border:1px solid var(--sand); border-radius:8px; padding:10px 12px 10px 36px; font-family:'Jost',sans-serif; font-size:14px; outline:none; color:var(--brown); }
+.drawer-search:focus { border-color:var(--gold); background:white; }
+.drawer-search-ic { position:absolute; left:30px; top:28px; width:16px; height:16px; color:var(--text-soft); }
+
 .drawer-sec { font-size:10px; font-weight:500; letter-spacing:.2em; text-transform:uppercase; color:var(--rust); padding:20px 20px 8px; }
 .drawer-a { display:flex; justify-content:space-between; align-items:center; padding:12px 20px; text-decoration:none; color:var(--brown-mid); font-size:15px; border-bottom:1px solid var(--sand-lt); cursor:pointer; transition:.15s; }
 .drawer-a:hover, .drawer-a.active { background:var(--sand-lt); color:var(--rust); }
 .drawer-a .badge { font-size:11px; background:var(--sand); color:var(--brown-mid); padding:2px 8px; border-radius:20px; }
 .drawer-a.active .badge { background:var(--rust); color:white; }
+
+/* Drawer Social */
+.drawer-social { display:flex; gap:16px; padding:20px; border-top:1px solid var(--sand-lt); margin-top:10px; }
+.drawer-social a { color:var(--brown-mid); opacity:0.7; transition:0.2s; }
+.drawer-social a:hover { color:var(--rust); opacity:1; }
+.drawer-social svg { width:22px; height:22px; }
+
 .drawer-info { padding:20px; }
 .drawer-info p { font-size:13px; color:var(--text-soft); line-height:1.6; margin-bottom:12px; }
 .drawer-info a { font-size:13px; color:var(--rust); text-decoration:none; font-weight:500; }
-.drawer-footer { padding:20px; border-top:1px solid var(--sand-lt); margin-top:10px; opacity:.5; font-size:11px; color:var(--text-soft); }
+.drawer-footer { padding:20px; border-top:1px solid var(--sand-lt); opacity:.5; font-size:11px; color:var(--text-soft); display:flex; justify-content:space-between; align-items:center; }
+.lang-toggle { cursor:pointer; color:var(--brown); font-weight:500; }
 
 /* CAT BAR */
 .cat-bar { background:var(--surface); border-bottom:1px solid var(--sand); overflow-x:auto; scrollbar-width:none; -webkit-overflow-scrolling:touch; position:sticky; top:81px; z-index:100; }
@@ -154,15 +174,6 @@ header { position:sticky; top:0; z-index:200; background:var(--brown); display:f
   <a href="#" class="logo-wrap">
     <span class="logo-text">VAN OUDE DINGEN, de mensen die voorbij gaan...</span>
   </a>
-  <div class="header-bottom">
-    <div class="header-search">
-      <svg class="search-ic" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M11 19A8 8 0 1 0 11 3a8 8 0 0 0 0 16z"/></svg>
-      <input type="search" id="searchInput" placeholder="Zoeken…" oninput="onSearch()" autocomplete="off">
-    </div>
-    <button class="hamburger" id="menuBtn" onclick="toggleDrawer()" aria-label="Menu">
-      <span></span><span></span><span></span>
-    </button>
-  </div>
 </header>
 
 <div class="overlay" id="overlay" onclick="closeDrawer()"></div>
@@ -172,23 +183,53 @@ header { position:sticky; top:0; z-index:200; background:var(--brown); display:f
     <div class="drawer-hd-name">Van Oude Dingen</div>
     <div class="drawer-hd-sub">vintage meubels & accessoires</div>
   </div>
+
+  <div class="drawer-search-wrap">
+    <svg class="drawer-search-ic" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M11 19A8 8 0 1 0 11 3a8 8 0 0 0 0 16z"/></svg>
+    <input type="search" id="searchInput" class="drawer-search" placeholder="Zoeken naar items…" oninput="onSearch()" autocomplete="off">
+  </div>
+
   <div class="drawer-sec">Categorieën</div>
   <a class="drawer-a active" onclick="setCat('',this)">Alles</a>
   <a class="drawer-a" onclick="setCat('te-koop-kasten',this)">Kasten</a>
+  <a class="drawer-a" onclick="setCat('tafels',this)">Tafels</a>
+  <a class="drawer-a" onclick="setCat('stoelen',this)">Stoelen</a>
+  <a class="drawer-a" onclick="setCat('banken-en-fauteuils',this)">Banken & fauteuils</a>
   <a class="drawer-a" onclick="setCat('lampen',this)">Lampen</a>
   <a class="drawer-a" onclick="setCat('accessoires',this)">Accessoires</a>
-  <a class="drawer-a" onclick="setCat('tafels',this)">Tafels</a>
   <a class="drawer-a" onclick="setCat('keramiek',this)">Keramiek</a>
-  <a class="drawer-a" onclick="setCat('banken-en-fauteuils',this)">Banken & fauteuils</a>
   <a class="drawer-a" onclick="setCat('baby-kind',this)">Baby & kind</a>
-  <a class="drawer-a" onclick="setCat('stoelen',this)">Stoelen</a>
+  <a class="drawer-a" onclick="setCat('elektronica',this)">Elektronica</a>
+  <a class="drawer-a" onclick="setCat('koopjeshoek',this)">Koopjeshoek</a>
   <a class="drawer-a" onclick="setCat('inspiratie',this)">Inspiratie</a>
   <a class="drawer-a" onclick="setCat('verkocht-sold',this)">Verkocht</a>
+
+  <div class="drawer-sec">Over Van Oude Dingen</div>
+  <a class="drawer-a" onclick="openPage('over-mij')">Over mij</a>
+  <a class="drawer-a" onclick="openPage('info')">Info</a>
+  <a class="drawer-a" onclick="openPage('in-de-media')">In de media</a>
+  <a class="drawer-a" onclick="openPage('contact')">Contact</a>
+
   <div class="drawer-info">
     <p>Hallo! Ik ben Marlou. Al meer dan tien jaar zoek ik naar authentieke vintage stukken vol karakter.</p>
-    <a href="/cdn-cgi/l/email-protection#a0cdc1d2cccfd5e0d6c1cecfd5c4c5c4c9cec7c5ce8ececc"><span class="__cf_email__" data-cfemail="107d71627c7f655066717e7f65747574797e77757e3e7e7c">[email&#160;protected]</span> →</a>
   </div>
-  <div class="drawer-footer">Versie <span id="appVersion">v1.2.0</span></div>
+
+  <div class="drawer-social">
+    <a href="https://www.instagram.com/vanoudedingen/" target="_blank" aria-label="Instagram">
+      <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+    </a>
+    <a href="https://www.facebook.com/vanoudedingen/" target="_blank" aria-label="Facebook">
+      <svg fill="currentColor" viewBox="0 0 24 24"><path d="M22.675 0h-21.35c-.732 0-1.325.593-1.325 1.325v21.351c0 .731.593 1.324 1.325 1.324h11.495v-9.294h-3.128v-3.622h3.128v-2.671c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12v9.293h6.116c.73 0 1.323-.593 1.323-1.325v-21.35c0-.732-.593-1.325-1.325-1.325z"/></svg>
+    </a>
+    <a href="https://nl.pinterest.com/vanoudedingen/" target="_blank" aria-label="Pinterest">
+      <svg fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.627 0-12 5.373-12 12 0 5.084 3.163 9.426 7.627 11.174-.105-.949-.2-2.405.042-3.441.218-.937 1.407-5.965 1.407-5.965s-.359-.719-.359-1.782c0-1.668.967-2.914 2.171-2.914 1.023 0 1.518.769 1.518 1.69 0 1.029-.655 2.568-.994 3.995-.283 1.194.599 2.169 1.777 2.169 2.133 0 3.772-2.249 3.772-5.495 0-2.873-2.064-4.882-5.012-4.882-3.414 0-5.418 2.561-5.418 5.207 0 1.031.397 2.138.893 2.738.098.119.112.224.083.345l-.333 1.36c-.053.22-.174.267-.402.161-1.499-.698-2.436-2.889-2.436-4.649 0-3.785 2.75-7.261 7.929-7.261 4.162 0 7.397 2.966 7.397 6.93 0 4.135-2.607 7.462-6.225 7.462-1.214 0-2.354-.632-2.744-1.376l-.748 2.848c-.27 1.037-1.002 2.338-1.491 3.134 1.124.347 2.316.534 3.548.534 6.627 0 12-5.373 12-12s-5.373-12-12-12z"/></svg>
+    </a>
+  </div>
+
+  <div class="drawer-footer">
+    <span>Versie <span id="appVersion">v1.3.0</span></span>
+    <span class="lang-toggle" onclick="toggleLang()">NL | EN</span>
+  </div>
 </div>
 
 <nav class="cat-bar">
@@ -202,6 +243,11 @@ header { position:sticky; top:0; z-index:200; background:var(--brown); display:f
     <button class="cat-pill" onclick="setCat('banken-en-fauteuils',this)">Banken</button>
     <button class="cat-pill" onclick="setCat('baby-kind',this)">Baby & kind</button>
     <button class="cat-pill" onclick="setCat('stoelen',this)">Stoelen</button>
+  </div>
+  <div class="cat-menu-btn-wrap">
+    <button class="hamburger" id="menuBtn" onclick="toggleDrawer()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </nav>
 
@@ -254,7 +300,9 @@ const categoryMap = {
   'baby-kind':           2606,
   'stoelen':             1,
   'inspiratie':          22,
-  'verkocht-sold':       1311
+  'verkocht-sold':       1311,
+  'elektronica':         19,
+  'koopjeshoek':         2643
 };
 
 // ─── MASONRY ───────────────────────────────────────────────────────
@@ -482,8 +530,11 @@ function onSearch() {
 async function openLb(tile, post) {
   // Show lightbox immediately with already-loaded image
   const tileImg = tile.querySelector('.tile-img-wrap img');
+  document.getElementById('lbMainWrap').style.display = 'flex';
+  document.getElementById('lbActions').style.display = 'flex';
   document.getElementById('lbImg').src = tileImg?.src || '';
   document.getElementById('lbTitle').textContent = stripHtml(post.title.rendered);
+  document.getElementById('lbCat').textContent = 'Item';
   document.getElementById('lbDesc').textContent  = 'Laden…';
   document.getElementById('lbGallery').innerHTML = '';
   document.getElementById('lbMail').href = `mailto:marlou@vanoudedingen.nl?subject=Interesse in: ${encodeURIComponent(stripHtml(post.title.rendered))}`;
@@ -500,8 +551,8 @@ async function openLb(tile, post) {
     ]);
 
     // Description from post content
-    document.getElementById('lbDesc').textContent =
-      stripHtml(postData.content?.rendered || '').trim();
+    document.getElementById('lbDesc').innerHTML =
+      (postData.content?.rendered || '').trim();
 
     // Gallery from media attachments
     if (Array.isArray(mediaData) && mediaData.length > 0) {
@@ -539,6 +590,9 @@ async function openLb(tile, post) {
 function closeLb() {
   document.getElementById('lightbox').classList.remove('open');
   document.body.style.overflow = '';
+  // Cleanup
+  document.getElementById('lbImg').src = '';
+  document.getElementById('lbDesc').innerHTML = '';
 }
 
 // ─── HELPERS ───────────────────────────────────────────────────────
@@ -566,6 +620,36 @@ function setBA(btn) {
   document.querySelectorAll('.bnav-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
 }
+
+async function openPage(slug) {
+  closeDrawer();
+  document.getElementById('lbImg').src = '';
+  document.getElementById('lbMainWrap').style.display = 'none';
+  document.getElementById('lbGallery').innerHTML = '';
+  document.getElementById('lbTitle').textContent = 'Laden…';
+  document.getElementById('lbDesc').textContent = '';
+  document.getElementById('lbCat').textContent = 'Pagina';
+  document.getElementById('lbActions').style.display = 'none';
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+
+  try {
+    const pages = await fetch(`${WP_BASE}/pages?slug=${slug}&_fields=title,content`).then(r => r.json());
+    if (pages && pages.length > 0) {
+      document.getElementById('lbTitle').textContent = stripHtml(pages[0].title.rendered);
+      document.getElementById('lbDesc').innerHTML = pages[0].content.rendered;
+    } else {
+      document.getElementById('lbTitle').textContent = 'Niet gevonden';
+    }
+  } catch (err) {
+    document.getElementById('lbTitle').textContent = 'Fout bij laden';
+  }
+}
+
+function toggleLang() {
+  window.location.href = 'https://vanoudedingen.nl/english/';
+}
+
 function showToast(m) {
   const t = document.getElementById('offlineToast');
   t.textContent = m;

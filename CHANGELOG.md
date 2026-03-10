@@ -79,3 +79,7 @@ Description: Unify logo text to single line, increase initial batch size to 12, 
 ## v1.2.0 (2026-03-10)
 Type: patch
 Description: Force logo text to single line with fluid scaling, fix sticky category bar position, and add horizontal scroll hint.
+
+## v1.3.0 (2026-03-10)
+Type: minor
+Description: Major redesign: Slim header, sticky menu in category bar, drawer search, integrated brand pages (Over mij, Info) via Lightbox, and social media icons.
