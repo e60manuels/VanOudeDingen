@@ -79,3 +79,7 @@ Description: Unify logo text to single line, increase initial batch size to 12, 
 ## v1.2.0 (2026-03-10)
 Type: patch
 Description: Force logo text to single line with fluid scaling, fix sticky category bar position, and add horizontal scroll hint.
+
+## v1.2.1 (2026-03-10)
+Type: patch
+Description: Revert to stable v1.2.0 and re-deploy to force Service Worker cache refresh.
