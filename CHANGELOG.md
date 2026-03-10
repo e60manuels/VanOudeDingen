@@ -75,3 +75,7 @@ Description: Optimize infinite scroll (batch size, trigger distance), redesign h
 ## v1.1.9 (2026-03-10)
 Type: patch
 Description: Unify logo text to single line, increase initial batch size to 12, use Special Elite font for menu header, and refine menu close button alignment.
+
+## v1.2.0 (2026-03-10)
+Type: patch
+Description: Force logo text to single line with fluid scaling, fix sticky category bar position, and add horizontal scroll hint.
