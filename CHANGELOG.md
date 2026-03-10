@@ -63,3 +63,7 @@ Description: Update index.html version, fix loadMoreTrigger positioning for corr
 ## v1.1.6 (2026-03-09)
 Type: patch
 Description: Fix lazy loading by adjusting loadMoreTrigger styling to be observable.
+
+## v1.1.7 (2026-03-10)
+Type: patch
+Description: fix: replace IntersectionObserver with scroll event for infinite scrolling and use native lazy loading for images.

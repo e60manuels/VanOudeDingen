@@ -1,0 +1,86 @@
+In the PWA project at /bestanden/pwa/index.html make the following changes. 
+
+## CHANGE 1 — Remove IntersectionObserver for images and scroll
+
+In the initObservers function, remove the entire imageObserver 
+including its IntersectionObserver definition.
+
+Remove the entire scrollObserver including its IntersectionObserver 
+definition and the line:
+  scrollObserver.observe(document.getElementById('loadMoreTrigger'));
+
+If initObservers is now completely empty, remove the function 
+entirely and remove the call to initObservers() in the boot section.
+
+Also remove these variable declarations at the top:
+  let scrollObserver = null;
+  let imageObserver  = null;
+
+## CHANGE 2 — Remove the loadMoreTrigger div
+
+In the HTML, remove this line:
+  <div id="loadMoreTrigger"></div>
+
+## CHANGE 3 — Replace image loading in buildTile
+
+In the buildTile function, find the tile.innerHTML assignment.
+
+Replace the current tile-img-wrap block:
+  <div class="tile-img-wrap">
+    <img class="thumb" src="${thumb}" alt="" aria-hidden="true">
+    <img class="full" data-src="${full}" alt="${escHtml(title)}">
+  </div>
+
+With a single native lazy-loaded image:
+  <div class="tile-img-wrap">
+    <img src="${full}" alt="${escHtml(title)}" loading="lazy">
+  </div>
+
+## CHANGE 4 — Fix lightbox opening image
+
+In the openLb function, the current code reads:
+  const fullEl   = tile.querySelector('.full');
+  const thumbEl  = tile.querySelector('.thumb');
+  const fullSrc  = fullEl?.src || fullEl?.dataset.src || '';
+  const thumbSrc = thumbEl?.src || '';
+  document.getElementById('lbImg').src = fullSrc || thumbSrc;
+
+Replace with:
+  const tileImg = tile.querySelector('.tile-img-wrap img');
+  document.getElementById('lbImg').src = tileImg?.src || '';
+
+## CHANGE 5 — Replace scrollObserver with scroll event
+
+In the boot section at the bottom, add a scroll event listener 
+for loading the next batch of tiles:
+
+  window.addEventListener('scroll', () => {
+    if (isLoading || currentPage >= totalPages) return;
+    const distanceFromBottom = document.documentElement.scrollHeight 
+                             - window.scrollY 
+                             - window.innerHeight;
+    if (distanceFromBottom < 300) loadNextPage();
+  });
+
+## CHANGE 6 — Clean up CSS
+
+In the CSS, find and remove these rules that are no longer needed:
+  .tile-img-wrap .thumb { ... }
+  .tile-img-wrap .full { ... }
+  .tile-img-wrap.loaded .full { ... }
+  .tile-img-wrap.loaded .thumb { ... }
+  .tile:hover .full { ... }
+
+Replace them with a single hover rule for the remaining img:
+  .tile:hover .tile-img-wrap img { transform: scale(1.03); }
+
+Also add to the existing .tile-img-wrap img rule:
+  transition: transform 0.4s ease;
+
+## After all changes confirm:
+- Exact lines changed or removed in index.html
+- That the tile images still display correctly
+- That scrolling down loads the next 6 tiles
+- That clicking a tile still opens the lightbox with the correct image
+- That no other functionality is broken
+- Run: ./scripts/deploy.sh
