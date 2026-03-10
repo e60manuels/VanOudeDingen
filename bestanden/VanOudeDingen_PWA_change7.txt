@@ -1,0 +1,26 @@
+In the PWA project at /bestanden/pwa/index.html make the following 
+two small changes. Do NOT change anything else.
+
+## CHANGE 1 — Increase batch size for subsequent loads
+
+Find the CONFIG section at the top of the script:
+  const BATCH_SIZE = 6;
+
+Replace with:
+  const BATCH_SIZE_INITIAL  = 6;
+  const BATCH_SIZE_NEXT     = 12;
+
+Then find the getPostsBatch function where BATCH_SIZE is used:
+  let url = `${WP_BASE}/posts?per_page=${BATCH_SIZE}&page=${page}&_embed=1`
+
+Replace with:
+  const batchSize = page === 1 ? BATCH_SIZE_INITIAL : BATCH_SIZE_NEXT;
+  let url = `${WP_BASE}/posts?per_page=${batchSize}&page=${page}&_embed=1`
+
+## CHANGE 2 — Increase scroll trigger distance from 300px to 800px
+
+Find the scroll event listener at the bottom of the script:
+  if (distanceFromBottom < 300) loadNextPage();
+
+Replace with:
+  if (distanceFromBottom < 800) loadNextPage();

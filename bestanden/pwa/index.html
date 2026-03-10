@@ -32,26 +32,28 @@ body { font-family: 'Jost', sans-serif; background: var(--bg); color: var(--brow
 .install-x { background:none; border:none; color:var(--sand); font-size:18px; cursor:pointer; opacity:.6; flex-shrink:0; }
 
 /* HEADER */
-header { position:sticky; top:0; z-index:200; background:var(--brown); height:var(--header-h); display:flex; align-items:center; padding:0 16px; gap:12px; box-shadow:0 2px 12px rgba(44,26,14,.3); }
-.logo-wrap { display:flex; flex-direction:column; text-decoration:none; flex-shrink:0; }
-.logo-name { font-family:'Special Elite', cursive; font-size:18px; color:#FDFAF5; line-height:1.1; }
-.logo-tag { font-family:'Special Elite', cursive; font-size:10px; color:white; margin-top:2px; }
-.header-search { flex:1; position:relative; max-width:300px; margin-left:auto; }
-.header-search input { width:100%; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.15); border-radius:20px; padding:7px 14px 7px 34px; color:white; font-family:'Jost',sans-serif; font-size:13px; outline:none; transition:.2s; }
+header { position:sticky; top:0; z-index:200; background:var(--brown); display:flex; flex-direction:column; padding:10px 16px; gap:10px; box-shadow:0 2px 12px rgba(44,26,14,.3); }
+.logo-wrap { display:flex; align-items:baseline; gap:8px; text-decoration:none; width:100%; justify-content:center; }
+.logo-name { font-family:'Special Elite', cursive; font-size:18px; color:#FDFAF5; line-height:1; }
+.logo-tag { font-family:'Special Elite', cursive; font-size:11px; color:var(--gold); }
+.header-bottom { display:flex; align-items:center; gap:12px; width:100%; }
+.header-search { flex:1; position:relative; }
+.header-search input { width:100%; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.15); border-radius:20px; padding:8px 14px 8px 36px; color:white; font-family:'Jost',sans-serif; font-size:14px; outline:none; transition:.2s; }
 .header-search input::placeholder { color:rgba(255,255,255,.4); }
 .header-search input:focus { background:rgba(255,255,255,.18); border-color:rgba(255,255,255,.3); }
-.search-ic { position:absolute; left:10px; top:50%; transform:translateY(-50%); width:15px; height:15px; color:rgba(255,255,255,.4); }
-.hamburger { background:none; border:none; cursor:pointer; padding:4px; display:flex; flex-direction:column; gap:4px; flex-shrink:0; }
-.hamburger span { display:block; width:20px; height:1.5px; background:rgba(255,255,255,.8); border-radius:2px; transition:.25s; }
-.hamburger.open span:nth-child(1) { transform:translateY(5.5px) rotate(45deg); }
+.search-ic { position:absolute; left:12px; top:50%; transform:translateY(-50%); width:16px; height:16px; color:rgba(255,255,255,.4); }
+.hamburger { background:none; border:none; cursor:pointer; padding:6px; display:flex; flex-direction:column; gap:4px; flex-shrink:0; }
+.hamburger span { display:block; width:22px; height:2px; background:rgba(255,255,255,.8); border-radius:2px; transition:.25s; }
+.hamburger.open span:nth-child(1) { transform:translateY(6px) rotate(45deg); }
 .hamburger.open span:nth-child(2) { opacity:0; }
-.hamburger.open span:nth-child(3) { transform:translateY(-5.5px) rotate(-45deg); }
+.hamburger.open span:nth-child(3) { transform:translateY(-6px) rotate(-45deg); }
 
 /* DRAWER */
 .overlay { position:fixed; inset:0; background:rgba(44,26,14,.5); z-index:300; opacity:0; pointer-events:none; transition:.3s; }
 .overlay.open { opacity:1; pointer-events:all; }
 .drawer { position:fixed; top:0; right:0; width:min(300px,85vw); height:100%; background:var(--surface); z-index:400; transform:translateX(100%); transition:transform .3s cubic-bezier(.4,0,.2,1); overflow-y:auto; padding-bottom:var(--safe-bot); }
 .drawer.open { transform:translateX(0); }
+.drawer-close { position:absolute; top:calc(10px + var(--safe-top)); right:10px; background:rgba(255,255,255,0.15); border:none; color:white; width:36px; height:36px; border-radius:50%; font-size:20px; cursor:pointer; display:flex; align-items:center; justify-content:center; z-index:10; }
 .drawer-hd { background:var(--brown); padding:20px; padding-top:calc(20px + var(--safe-top)); }
 .drawer-hd-name { font-family:'Lora',serif; font-size:20px; color:#FDFAF5; margin-bottom:4px; }
 .drawer-hd-sub { font-size:11px; letter-spacing:.15em; text-transform:uppercase; color:var(--gold); }
@@ -66,7 +68,7 @@ header { position:sticky; top:0; z-index:200; background:var(--brown); height:va
 .drawer-footer { padding:20px; border-top:1px solid var(--sand-lt); margin-top:10px; opacity:.5; font-size:11px; color:var(--text-soft); }
 
 /* CAT BAR */
-.cat-bar { background:var(--surface); border-bottom:1px solid var(--sand); overflow-x:auto; scrollbar-width:none; -webkit-overflow-scrolling:touch; position:sticky; top:var(--header-h); z-index:100; }
+.cat-bar { background:var(--surface); border-bottom:1px solid var(--sand); overflow-x:auto; scrollbar-width:none; -webkit-overflow-scrolling:touch; position:sticky; top:98px; z-index:100; }
 .cat-bar::-webkit-scrollbar { display:none; }
 .cat-bar-inner { display:flex; padding:0 12px; min-width:max-content; }
 .cat-pill { display:inline-flex; align-items:center; gap:5px; padding:10px 14px; font-size:12px; color:var(--text-soft); border-bottom:2px solid transparent; cursor:pointer; white-space:nowrap; background:none; border-top:none; border-left:none; border-right:none; transition:.2s; }
@@ -79,8 +81,8 @@ header { position:sticky; top:0; z-index:200; background:var(--brown); height:va
 .page-title { font-family:'Lora',serif; font-size:20px; font-weight:600; color:var(--brown); }
 
 /* TILE GRID (MASONRY) */
-.tile-grid { display: flex; align-items: flex-start; padding:0 10px 90px; gap:10px; transition: opacity 0.5s ease-in-out; }
-@media(min-width:768px){.tile-grid{padding:0 14px 90px; gap:14px; }}
+.tile-grid { display: flex; align-items: flex-start; padding:0 10px 40px; gap:10px; transition: opacity 0.5s ease-in-out; }
+@media(min-width:768px){.tile-grid{padding:0 14px 40px; gap:14px; }}
 .grid-col { flex: 1; display: flex; flex-direction: column; min-width: 0; }
 
 .tile { width: 100%; margin-bottom:10px; background:var(--surface); border-radius:8px; overflow:hidden; cursor:pointer; position:relative; transition:transform .2s,box-shadow .2s; animation:tileIn .4s ease backwards; }
@@ -133,18 +135,11 @@ header { position:sticky; top:0; z-index:200; background:var(--brown); height:va
 .lb-cta:hover { background:#8E3F22; }
 .lb-link { font-size:13px; color:var(--gold); text-decoration:none; text-align:center; opacity:.8; padding:8px; }
 
-/* BOTTOM NAV */
-.bottom-nav { position:fixed; bottom:0; left:0; right:0; z-index:150; background:var(--surface); border-top:1px solid var(--sand); display:flex; padding-bottom:var(--safe-bot); box-shadow:0 -4px 20px rgba(44,26,14,.08); }
-@media(min-width:768px){.bottom-nav{display:none}}
-.bnav-btn { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; padding:8px 4px; background:none; border:none; cursor:pointer; color:var(--text-soft); font-family:'Jost',sans-serif; font-size:10px; transition:.2s; }
-.bnav-btn.active { color:var(--rust); }
-.bnav-btn svg { width:22px; height:22px; }
-
 /* LOADING TRIGGER */
 #loadMoreTrigger { height: 50px; width: 100%; }
 
 /* OFFLINE TOAST */
-#offlineToast { position:fixed; bottom:calc(70px + var(--safe-bot)); left:50%; transform:translateX(-50%) translateY(20px); background:var(--brown); color:var(--sand); padding:10px 20px; border-radius:20px; font-size:13px; opacity:0; transition:.3s; pointer-events:none; z-index:600; white-space:nowrap; }
+#offlineToast { position:fixed; bottom:calc(20px + var(--safe-bot)); left:50%; transform:translateX(-50%) translateY(20px); background:var(--brown); color:var(--sand); padding:10px 20px; border-radius:20px; font-size:13px; opacity:0; transition:.3s; pointer-events:none; z-index:600; white-space:nowrap; }
 #offlineToast.show { opacity:1; transform:translateX(-50%) translateY(0); }
 </style>
 </head>
@@ -161,17 +156,20 @@ header { position:sticky; top:0; z-index:200; background:var(--brown); height:va
     <span class="logo-name">VAN OUDE DINGEN,</span>
     <span class="logo-tag">de mensen die voorbij gaan...</span>
   </a>
-  <div class="header-search">
-    <svg class="search-ic" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M11 19A8 8 0 1 0 11 3a8 8 0 0 0 0 16z"/></svg>
-    <input type="search" id="searchInput" placeholder="Zoeken…" oninput="onSearch()" autocomplete="off">
+  <div class="header-bottom">
+    <div class="header-search">
+      <svg class="search-ic" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M11 19A8 8 0 1 0 11 3a8 8 0 0 0 0 16z"/></svg>
+      <input type="search" id="searchInput" placeholder="Zoeken…" oninput="onSearch()" autocomplete="off">
+    </div>
+    <button class="hamburger" id="menuBtn" onclick="toggleDrawer()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
   </div>
-  <button class="hamburger" id="menuBtn" onclick="toggleDrawer()" aria-label="Menu">
-    <span></span><span></span><span></span>
-  </button>
 </header>
 
 <div class="overlay" id="overlay" onclick="closeDrawer()"></div>
 <div class="drawer" id="drawer">
+  <button class="drawer-close" onclick="closeDrawer()" aria-label="Sluiten">✕</button>
   <div class="drawer-hd">
     <div class="drawer-hd-name">Van Oude Dingen</div>
     <div class="drawer-hd-sub">vintage meubels & accessoires</div>
@@ -192,7 +190,7 @@ header { position:sticky; top:0; z-index:200; background:var(--brown); height:va
     <p>Hallo! Ik ben Marlou. Al meer dan tien jaar zoek ik naar authentieke vintage stukken vol karakter.</p>
     <a href="/cdn-cgi/l/email-protection#a0cdc1d2cccfd5e0d6c1cecfd5c4c5c4c9cec7c5ce8ececc"><span class="__cf_email__" data-cfemail="107d71627c7f655066717e7f65747574797e77757e3e7e7c">[email&#160;protected]</span> →</a>
   </div>
-  <div class="drawer-footer">Versie <span id="appVersion">v1.1.7</span></div>
+  <div class="drawer-footer">Versie <span id="appVersion">v1.1.8</span></div>
 </div>
 
 <nav class="cat-bar">
@@ -230,27 +228,13 @@ header { position:sticky; top:0; z-index:200; background:var(--brown); height:va
   </div>
 </div>
 
-<nav class="bottom-nav">
-  <button class="bnav-btn active" onclick="setCat('',this);setBA(this)">
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg><span>Alles</span>
-  </button>
-  <button class="bnav-btn" onclick="setCat('lampen',this);setBA(this)">
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg><span>Lampen</span>
-  </button>
-  <button class="bnav-btn" onclick="setCat('te-koop-kasten',this);setBA(this)">
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2" stroke-width="1.5"/><line x1="3" y1="12" x2="21" y2="12" stroke-width="1.5"/></svg><span>Kasten</span>
-  </button>
-  <button class="bnav-btn" onclick="toggleDrawer()">
-    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16"/></svg><span>Menu</span>
-  </button>
-</nav>
-
 <div id="offlineToast"></div>
 
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 // ─── CONFIG ────────────────────────────────────────────────────────
-const WP_BASE    = 'https://vanoudedingen.nl/wp-json/wp/v2';
-const BATCH_SIZE = 6;
+const WP_BASE           = 'https://vanoudedingen.nl/wp-json/wp/v2';
+const BATCH_SIZE_INITIAL = 6;
+const BATCH_SIZE_NEXT    = 12;
 
 // ─── STATE ─────────────────────────────────────────────────────────
 let currentSlug   = '';
@@ -373,7 +357,8 @@ async function loadNextPage() {
 
 async function getPostsBatch(page) {
   // Lean request: no content, no full embed — only what tiles need
-  let url = `${WP_BASE}/posts?per_page=${BATCH_SIZE}&page=${page}&_embed=1`
+  const batchSize = page === 1 ? BATCH_SIZE_INITIAL : BATCH_SIZE_NEXT;
+  let url = `${WP_BASE}/posts?per_page=${batchSize}&page=${page}&_embed=1`
           + `&_fields=id,title,date,link,featured_media,_links,_embedded`;
 
   const search = document.getElementById('searchInput').value.trim();
@@ -611,7 +596,7 @@ window.addEventListener('scroll', () => {
   const distanceFromBottom = document.documentElement.scrollHeight 
                            - window.scrollY 
                            - window.innerHeight;
-  if (distanceFromBottom < 300) loadNextPage();
+  if (distanceFromBottom < 800) loadNextPage();
 });
 
 window.addEventListener('offline', () => showToast('📵 Geen internetverbinding'));

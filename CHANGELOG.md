@@ -67,3 +67,7 @@ Description: Fix lazy loading by adjusting loadMoreTrigger styling to be observa
 ## v1.1.7 (2026-03-10)
 Type: patch
 Description: fix: replace IntersectionObserver with scroll event for infinite scrolling and use native lazy loading for images.
+
+## v1.1.8 (2026-03-10)
+Type: patch
+Description: Optimize infinite scroll (batch size, trigger distance), redesign header to two rows, remove bottom nav, and add menu close button.
