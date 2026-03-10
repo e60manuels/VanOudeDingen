@@ -227,7 +227,7 @@ header { position:sticky; top:0; z-index:200; background:var(--brown); display:f
   </div>
 
   <div class="drawer-footer">
-    <span>Versie <span id="appVersion">v1.3.2</span></span>
+    <span>Versie <span id="appVersion">v1.3.3</span></span>
     <span class="lang-toggle" onclick="toggleLang()">NL | EN</span>
   </div>
 </div>
@@ -492,7 +492,7 @@ function setCat(slug, btn) {
   currentPage  = 1;
   window.scrollTo(0, 0);
 
-  document.querySelectorAll('.cat-pill, .drawer-a, .bnav-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.cat-pill, .drawer-a').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
 
   const titles = {
@@ -505,7 +505,9 @@ function setCat(slug, btn) {
     'baby-kind':           'Baby & kind',
     'stoelen':             'Stoelen',
     'inspiratie':          'Inspiratie',
-    'verkocht-sold':       'Verkocht'
+    'verkocht-sold':       'Verkocht',
+    'elektronica':         'Elektronica',
+    'koopjeshoek':         'Koopjeshoek'
   };
   const bar = document.getElementById('pageBar');
   if (slug && titles[slug]) {
@@ -515,6 +517,7 @@ function setCat(slug, btn) {
     bar.classList.remove('show');
   }
 
+  // Clear drawer search input when setting category
   document.getElementById('searchInput').value = '';
   closeDrawer();
   fetchInitial();
@@ -617,10 +620,6 @@ function closeDrawer() {
   document.getElementById('overlay').classList.remove('open');
   document.getElementById('menuBtn').classList.remove('open');
   document.body.style.overflow = '';
-}
-function setBA(btn) {
-  document.querySelectorAll('.bnav-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
 }
 
 async function openPage(slug) {

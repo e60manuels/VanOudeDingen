@@ -91,3 +91,7 @@ Description: Fix header/cat-bar alignment, restore sticky menu button, sync cate
 ## v1.3.2 (2026-03-10)
 Type: patch
 Description: Fix lightbox/page-loading interactivity (tiles and brand pages) by correcting missing HTML ID.
+
+## v1.3.3 (2026-03-10)
+Type: patch
+Description: Resolve critical regression: Fix app not loading tiles and menu not working due to incorrect searchInput references and menuBtn handling after drawer integration.
